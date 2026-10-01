@@ -11,6 +11,9 @@ export const colors = {
   butter: "#F5D46B",
   sakura: "#F2A7B8",
   lilac: "#C3B1E1",
+  desk: "#211F1D",
+  deskSoft: "#2B2825",
+  chalk: "#EFE6D6",
 } as const;
 
 /** GSAP eases. `ink` is the house ease: quick start, soft landing, like a pen stroke. */

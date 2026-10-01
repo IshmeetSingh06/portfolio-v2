@@ -3,6 +3,7 @@
 import { useRef, type ReactNode } from "react";
 import { gsap, useGSAP, Draggable, InertiaPlugin } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/motion";
+import { play } from "@/lib/sound";
 import { Sticker } from "@/components/ui/Sticker";
 import { BEAN_TARGET, emitBean, type Ingredient, type Interest } from "@/components/mascot/beanBus";
 
@@ -178,6 +179,7 @@ export function DraggableSticker({ children, label, rotate = 0, className, depth
       const slap = (delay = 0.18) =>
         gsap
           .timeline({ delay })
+          .add(() => play("slap"))
           .to(tilt, { scale: 0.93, duration: 0.09, ease: "power2.in" })
           .to(tilt, { scale: 1, duration: 0.6, ease: "elastic.out(1.1, 0.42)" });
 
@@ -210,13 +212,19 @@ export function DraggableSticker({ children, label, rotate = 0, className, depth
             const hit = Math.abs(vx);
             x = gsap.utils.clamp(b.minX, b.maxX, x);
             vx = (x === b.minX ? 1 : -1) * hit * RESTITUTION;
-            if (hit > 120) bounceSquash("x", hit);
+            if (hit > 120) {
+              bounceSquash("x", hit);
+              play("tick");
+            }
           }
           if (y < b.minY || y > b.maxY) {
             const hit = Math.abs(vy);
             y = gsap.utils.clamp(b.minY, b.maxY, y);
             vy = (y === b.minY ? 1 : -1) * hit * RESTITUTION;
-            if (hit > 120) bounceSquash("y", hit);
+            if (hit > 120) {
+              bounceSquash("y", hit);
+              play("tick");
+            }
           }
           gsap.set(el, { x, y });
           lean(rotate + gsap.utils.clamp(-22, 22, vx / 70));
@@ -268,7 +276,10 @@ export function DraggableSticker({ children, label, rotate = 0, className, depth
           })
           .to(el, { x: `+=${dx}`, y: `+=${dy - 30}`, duration: 0.25, ease: "power2.out" })
           .to(el, { y: `+=${30}`, scale: 0.1, rotation: 200, duration: 0.22, ease: "power2.in" })
-          .add(() => emitBean({ type: "feed", ingredient: feeds! }))
+          .add(() => {
+            play("gulp");
+            emitBean({ type: "feed", ingredient: feeds! });
+          })
           .set(el, { opacity: 0 })
           .set(el, { scale: 1, rotation: 0 }, "+=1.2")
           .set(el, { x: 0, y: 0 })
@@ -284,6 +295,7 @@ export function DraggableSticker({ children, label, rotate = 0, className, depth
           dragging = true;
           el.classList.add("is-lifted");
           this.applyBounds(viewportBounds(el));
+          play("peel");
           gsap.to(tilt, { scale: 1.12, duration: 0.22, ease: "power2.out", overwrite: "auto" });
           if (!reduced) peelTo(0.17, 0.45, "back.out(1.6)");
         },

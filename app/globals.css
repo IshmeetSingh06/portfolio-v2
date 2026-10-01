@@ -13,6 +13,10 @@
   --color-butter: #f5d46b;
   --color-sakura: #f2a7b8;
   --color-lilac: #c3b1e1;
+  /* the desk the sketchbook sits on, and the chalk-line doodles drawn on it */
+  --color-desk: #211f1d;
+  --color-desk-soft: #2b2825;
+  --color-chalk: #efe6d6;
 
   --font-display: var(--font-instrument), "Iowan Old Style", Georgia, serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -29,6 +33,9 @@
 :root {
   --grid: 64px;
   --grid-line: rgb(26 23 20 / 0.055);
+  /* the cursor draws in ink on paper and in chalk on any dark surface (Cursor.tsx flips this) */
+  --cursor-ink: var(--color-ink);
+  --cursor-contrast: var(--color-paper);
 }
 
 html {
@@ -46,6 +53,21 @@ body {
     linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
   background-size: var(--grid) var(--grid);
   background-position: center top;
+}
+
+/* Paper surfaces: ink text, faint graph grid. */
+.paper {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
+.graph-paper {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  background-image:
+    linear-gradient(to right, rgb(84 104 140 / 0.13) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(84 104 140 / 0.13) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: -1px -1px;
 }
 
 /* Paper grain: sits above content (multiply) so stickers pick up the tooth too. */
@@ -109,9 +131,9 @@ body::after {
   left: 0;
   top: 0;
   translate: -50% -50%;
-  border: 1.6px solid;
+  border: 1.6px solid var(--cursor-ink);
   border-radius: 999px;
-  mix-blend-mode: multiply;
+  transition: background-color 200ms var(--ease-ink), border-color 200ms var(--ease-ink);
 }
 .cursor-label {
   position: absolute;
@@ -121,7 +143,7 @@ body::after {
   font-size: 20px;
   font-weight: 700;
   line-height: 1;
-  color: var(--color-paper);
+  color: var(--cursor-contrast);
   white-space: nowrap;
   opacity: 0;
 }
@@ -146,7 +168,8 @@ body::after {
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: var(--color-ink);
+  background: var(--cursor-ink);
+  transition: background-color 200ms var(--ease-ink);
 }
 @media (hover: none), (pointer: coarse) {
   .cursor-layer { display: none; }
@@ -291,4 +314,21 @@ body::after {
   filter:
     drop-shadow(0 1px 1px rgb(60 40 20 / 0.35))
     drop-shadow(0 5px 7px rgb(60 40 20 / 0.28));
+}
+
+/* ---------- Nav ---------- */
+.nav-colon {
+  animation: nav-blink 2s steps(1) infinite;
+}
+@keyframes nav-blink {
+  50% { opacity: 0.2; }
+}
+.nav-sun {
+  animation: nav-spin 24s linear infinite;
+}
+@keyframes nav-spin {
+  to { rotate: 360deg; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-colon, .nav-sun { animation: none; }
 }

@@ -120,7 +120,7 @@ export function Hero() {
   const hideHint = () => gsap.to(".hero-hint", { opacity: 0, y: -6, duration: 0.3, overwrite: true });
 
   return (
-    <section ref={root} className="hero relative flex min-h-dvh flex-col overflow-hidden px-5 pb-8 pt-28 md:px-10 md:pt-32">
+    <section ref={root} id="top" className="hero relative flex min-h-dvh flex-col overflow-hidden px-5 pb-8 pt-52 md:px-10 md:pt-60">
       {/* margin scribbles */}
       {SCRIBBLES.map((s) => (
         <span
@@ -135,7 +135,7 @@ export function Hero() {
       <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col">
         {/* dust hello */}
         <div className="relative">
-          <div className="hero-hint pointer-events-none absolute -top-12 left-[min(52vw,640px)] hidden items-start gap-1 md:flex">
+          <div className="hero-hint pointer-events-none absolute -top-12 left-[min(62vw,780px)] hidden items-start gap-1 md:flex">
             <ArrowDoodle ref={hintArrowRef} className="ink-boil mt-3 h-12 w-14 rotate-[150deg] text-espresso" />
             <span className="hero-hint-text -rotate-3 font-hand text-2xl text-espresso">click me, it&apos;s dust</span>
           </div>

@@ -3,6 +3,7 @@ import { Averia_Serif_Libre, Caveat, Gochi_Hand, Instrument_Serif, Inter, Noto_S
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
 import { InkFilters } from "@/components/providers/InkFilters";
 import { Cursor } from "@/components/ui/Cursor";
+import { Nav } from "@/components/nav/Nav";
 import "./globals.css";
 
 const instrument = Instrument_Serif({
@@ -54,7 +55,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-dvh">
         <InkFilters />
-        <SmoothScroll>{children}</SmoothScroll>
+        <SmoothScroll>
+          <Nav />
+          {children}
+        </SmoothScroll>
         <Cursor />
       </body>
     </html>

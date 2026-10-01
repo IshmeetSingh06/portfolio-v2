@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/motion";
+import { play } from "@/lib/sound";
 import { colors } from "@/lib/tokens";
 
 type Word = {
@@ -350,6 +351,7 @@ export function DustText({ a, b, label, maxSize = 200, className }: Props) {
 
   const modeRef = useRef(false);
   const setMode = (toB: boolean) => {
+    play("whoosh");
     modeRef.current = toB;
     setShowB(toB);
     toggleRef.current(toB);

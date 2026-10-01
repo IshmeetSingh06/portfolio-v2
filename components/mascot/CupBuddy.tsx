@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/motion";
+import { play } from "@/lib/sound";
 import { colors, spring } from "@/lib/tokens";
 import { onBean, type Ingredient } from "@/components/mascot/beanBus";
 
@@ -174,6 +175,7 @@ export function CupBuddy({ className, introDelay = 0 }: Props) {
       };
       const land = (impact: number) => {
         sy.vel -= Math.min(impact * 0.011, 7); // squash on landing
+        if (impact > 250) play("thud");
         if (impact > 380) poof();
       };
 
@@ -645,6 +647,7 @@ export function CupBuddy({ className, introDelay = 0 }: Props) {
           return jitter("too. much. caffeine.");
         }
         if (!reduced) hop(200 + held * 360);
+        play("boing");
         express(held > 0.5 ? "stars" : Math.random() < 0.4 ? "hearts" : "happy", "happy", "grin", 1.1);
         const n = held > 0.5 ? 5 : 3;
         for (let i = 0; i < n; i++) gsap.delayedCall(i * 0.08, () => popHeart());

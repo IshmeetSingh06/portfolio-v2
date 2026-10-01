@@ -11,26 +11,29 @@ type Look = {
   w: number;
   h: number;
   radius: number;
+  /** CSS colour; `var(--cursor-ink)` follows the surface (chalk on the desk, ink on paper). */
   bg: string;
-  border: string;
   dot: number;
   label: string;
 };
 
+const FILL = "var(--cursor-ink)";
+const CLEAR = "transparent";
+
 const LOOKS: Record<CursorState, Look> = {
-  default: { w: 22, h: 22, radius: 999, bg: "rgba(26,23,20,0)", border: colors.ink, dot: 1, label: "" },
-  pointer: { w: 46, h: 46, radius: 999, bg: "rgba(245,212,107,0.55)", border: colors.ink, dot: 0, label: "" },
-  view: { w: 84, h: 84, radius: 999, bg: colors.ink, border: colors.ink, dot: 0, label: "view" },
+  default: { w: 22, h: 22, radius: 999, bg: CLEAR, dot: 1, label: "" },
+  pointer: { w: 46, h: 46, radius: 999, bg: "rgba(245,212,107,0.5)", dot: 0, label: "" },
+  view: { w: 84, h: 84, radius: 999, bg: FILL, dot: 0, label: "view" },
   // Stickers: keep the ring small so the hover curl stays visible; the label rides alongside as a tag.
-  drag: { w: 34, h: 34, radius: 999, bg: "rgba(232,85,61,0.16)", border: colors.ink, dot: 1, label: "drag" },
+  drag: { w: 34, h: 34, radius: 999, bg: "rgba(232,85,61,0.18)", dot: 1, label: "drag" },
   // Small outline ring so whatever you're holding (and its peel) stays visible; the label becomes a side tag.
-  dragging: { w: 22, h: 22, radius: 999, bg: "rgba(26,23,20,0)", border: colors.ink, dot: 1, label: "wheee" },
-  text: { w: 3, h: 30, radius: 2, bg: colors.ink, border: colors.ink, dot: 0, label: "" },
-  hide: { w: 0, h: 0, radius: 999, bg: "rgba(26,23,20,0)", border: "rgba(26,23,20,0)", dot: 0, label: "" },
+  dragging: { w: 22, h: 22, radius: 999, bg: CLEAR, dot: 1, label: "wheee" },
+  text: { w: 3, h: 30, radius: 2, bg: FILL, dot: 0, label: "" },
+  hide: { w: 0, h: 0, radius: 999, bg: CLEAR, dot: 0, label: "" },
 };
 
 const INTERACTIVE = "[data-cursor], a, button, [role='button'], input, textarea, select, label";
-const SPARK_COLORS = [colors.ink, colors.ink, colors.tomato, colors.butter, colors.matcha];
+const SPARK_COLORS = ["var(--cursor-ink)", "var(--cursor-ink)", colors.tomato, colors.butter, colors.matcha];
 
 function resolveState(target: EventTarget | null): { state: CursorState; label?: string } {
   if (!(target instanceof Element)) return { state: "default" };
@@ -84,12 +87,12 @@ export function Cursor() {
       const text = customLabel ?? look.label;
       if (state === current && label.textContent === text) return;
       current = state;
+      ring.style.backgroundColor = look.bg; // colour eases via CSS transition
+      ring.style.borderColor = state === "hide" ? "transparent" : "";
       gsap.to(ring, {
         width: look.w,
         height: look.h,
         borderRadius: look.radius,
-        backgroundColor: look.bg,
-        borderColor: look.border,
         duration: 0.42,
         ease: "elastic.out(1, 0.6)",
         overwrite: "auto",
@@ -131,7 +134,19 @@ export function Cursor() {
       dotPos.style.transform = `translate3d(${target.x}px, ${target.y}px, 0)`;
     };
 
+    // Ink on paper (the default); chalk over anything marked data-surface="dark".
+    let onDark = false;
+    const setSurface = (target: EventTarget | null) => {
+      const dark = target instanceof Element && !!target.closest('[data-surface="dark"]');
+      if (dark === onDark) return;
+      onDark = dark;
+      const s = document.documentElement.style;
+      s.setProperty("--cursor-ink", dark ? colors.chalk : colors.ink);
+      s.setProperty("--cursor-contrast", dark ? colors.desk : colors.paper);
+    };
+
     const onOver = (e: PointerEvent) => {
+      setSurface(e.target);
       const { state, label: l } = resolveState(e.target);
       hoverState = state;
       hoverLabel = l;
@@ -159,7 +174,7 @@ export function Cursor() {
         line.setAttribute("y1", String(Math.sin(a) * r0));
         line.setAttribute("x2", String(Math.cos(a) * r1));
         line.setAttribute("y2", String(Math.sin(a) * r1));
-        line.setAttribute("stroke", color);
+        line.style.stroke = color; // style, not attribute: presentation attributes can't resolve var()
         line.setAttribute("stroke-width", "2.4");
         line.setAttribute("stroke-linecap", "round");
         svg.appendChild(line);
@@ -230,11 +245,7 @@ export function Cursor() {
       <div ref={sparkLayerRef} className="fixed inset-0 pointer-events-none" />
       <div ref={rootRef} className="cursor-root" style={{ opacity: 0 }}>
         <div ref={stretchRef} className="cursor-stretch">
-          <div
-            ref={ringRef}
-            className="cursor-ring"
-            style={{ width: 22, height: 22, borderColor: colors.ink }}
-          />
+          <div ref={ringRef} className="cursor-ring" style={{ width: 22, height: 22 }} />
         </div>
         <span ref={labelRef} className="cursor-label" />
       </div>

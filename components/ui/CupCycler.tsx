@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { inkIn } from "@/lib/ink";
 import { prefersReducedMotion } from "@/lib/motion";
+import { play } from "@/lib/sound";
 import { CUP_OPTIONS } from "@/components/art/cups";
 import { Popover } from "@/components/ui/Popover";
 
@@ -25,6 +26,7 @@ export function CupCycler({ className, start = 0 }: Props) {
     const advance = () => setIndex((i) => (i + 1) % CUP_OPTIONS.length);
     if (prefersReducedMotion()) return advance();
     busy.current = true;
+    play("pop");
     gsap
       .timeline({ onComplete: () => void (busy.current = false) })
       .to(el, { scale: 0, rotation: 90, duration: 0.16, ease: "power2.in" })
