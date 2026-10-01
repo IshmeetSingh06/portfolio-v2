@@ -332,3 +332,36 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   .nav-colon, .nav-sun { animation: none; }
 }
+
+/* ---------- Edge strips: block-print stamp tiles ---------- */
+.edge-strip {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 5;
+  display: none;
+  width: 64px;
+  overflow: hidden;
+  pointer-events: none;
+}
+@media (min-width: 768px) {
+  .edge-strip { display: block; }
+}
+.stamp-tile {
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 7px;
+  pointer-events: auto;
+}
+.stamp-tile.is-solid {
+  background: var(--color-tomato);
+  color: var(--color-paper);
+  /* inner cut line, like the frame on a carved block */
+  box-shadow: inset 0 0 0 3px var(--color-tomato), inset 0 0 0 4.6px var(--color-paper);
+}
+.stamp-tile.is-outline {
+  background: var(--color-paper);
+  color: var(--color-tomato);
+  border: 2.6px solid var(--color-tomato);
+}

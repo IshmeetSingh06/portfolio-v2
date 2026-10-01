@@ -4,6 +4,7 @@ import { SmoothScroll } from "@/components/providers/SmoothScroll";
 import { InkFilters } from "@/components/providers/InkFilters";
 import { Cursor } from "@/components/ui/Cursor";
 import { Nav } from "@/components/nav/Nav";
+import { EdgeStrips } from "@/components/edges/EdgeStrips";
 import "./globals.css";
 
 const instrument = Instrument_Serif({
@@ -56,8 +57,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-dvh">
         <InkFilters />
         <SmoothScroll>
+          <EdgeStrips />
           <Nav />
-          {children}
+          {/* desktop gutters keep content clear of the edge strips */}
+          <div className="md:px-24 lg:px-32">{children}</div>
         </SmoothScroll>
         <Cursor />
       </body>

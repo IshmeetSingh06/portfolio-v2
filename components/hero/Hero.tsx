@@ -28,19 +28,22 @@ const SCRIBBLES = [
   { text: "60fps or bust", className: "right-[30%] top-[52%] -rotate-3" },
   { text: "ctrl+z", className: "left-[38%] bottom-[16%] rotate-6" },
   { text: "margin: 0 auto;", className: "right-[3%] top-[34%] rotate-2" },
-  { text: "wip ✦", className: "left-[1.5%] bottom-[30%] -rotate-12" },
+  { text: "wip ✦", className: "left-[30%] bottom-[10%] -rotate-12" },
 ];
 
 /** Onigiri outline (apex + rounded base) in 0–1 box coords, so its peel lifts the left slope. */
 const ONIGIRI_SHAPE: StickerShape = [[0.5, 0.12], [0.14, 0.8], [0.86, 0.8]];
 
 /** Ingredient stickers near Bean. Phone shows the first three. */
-const PANTRY: { kind: Ingredient; rotate: number; className: string; shape?: StickerShape }[] = [
-  { kind: "milk", shape: "rect", rotate: -8, className: "left-[5%] bottom-[13%] md:left-auto md:right-[38%] md:bottom-[5%]" },
-  { kind: "sugar", rotate: 10, className: "left-[21%] bottom-[12%] md:left-auto md:right-[34%] md:bottom-[4%]" },
-  { kind: "ice", rotate: -4, className: "left-[37%] bottom-[13%] md:left-auto md:right-[30%] md:bottom-[5.5%]" },
-  { kind: "espresso", rotate: 14, className: "hidden md:block md:right-[26%] md:bottom-[4%]" },
-  { kind: "matcha", rotate: -10, className: "hidden md:block md:right-[22%] md:bottom-[5%]" },
+// Sits in a row beside Bean (both pinned to the viewport). Phone shows the first three.
+// A small huddle beside Bean (both pinned to the viewport). Phone shows the first three.
+// `y` staggers them up/down so the row reads as a loose pile, not a shelf.
+const PANTRY: { kind: Ingredient; rotate: number; y: number; className?: string; shape?: StickerShape }[] = [
+  { kind: "milk", shape: "rect", rotate: -8, y: -6 },
+  { kind: "sugar", rotate: 10, y: 4 },
+  { kind: "ice", rotate: -4, y: -10 },
+  { kind: "espresso", rotate: 14, y: 2, className: "hidden md:block" },
+  { kind: "matcha", rotate: -10, y: -4, className: "hidden md:block" },
 ];
 
 function Word({ children, className }: { children: ReactNode; className?: string }) {
@@ -120,7 +123,7 @@ export function Hero() {
   const hideHint = () => gsap.to(".hero-hint", { opacity: 0, y: -6, duration: 0.3, overwrite: true });
 
   return (
-    <section ref={root} id="top" className="hero relative flex min-h-dvh flex-col overflow-hidden px-5 pb-8 pt-52 md:px-10 md:pt-60">
+    <section ref={root} id="top" className="hero relative flex min-h-dvh flex-col overflow-hidden px-5 pb-6 pt-[clamp(9.5rem,23vh,12rem)] md:px-10">
       {/* margin scribbles */}
       {SCRIBBLES.map((s) => (
         <span
@@ -135,17 +138,18 @@ export function Hero() {
       <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col">
         {/* dust hello */}
         <div className="relative">
-          <div className="hero-hint pointer-events-none absolute -top-12 left-[min(62vw,780px)] hidden items-start gap-1 md:flex">
-            <ArrowDoodle ref={hintArrowRef} className="ink-boil mt-3 h-12 w-14 rotate-[150deg] text-espresso" />
-            <span className="hero-hint-text -rotate-3 font-hand text-2xl text-espresso">click me, it&apos;s dust</span>
+          <div className="hero-hint pointer-events-none absolute -bottom-14 left-[min(44%,520px)] z-10 hidden flex-col items-center md:flex">
+            {/* arrow points straight up at the dust */}
+            <ArrowDoodle ref={hintArrowRef} className="ink-boil h-10 w-12 -rotate-45 text-espresso" />
+            <span className="hero-hint-text -mt-1 -rotate-3 font-hand text-2xl text-espresso">click me, it&apos;s dust</span>
           </div>
-          <div className="hero-dust max-w-[1000px]" onClick={hideHint}>
+          <div className="hero-dust max-w-[min(1000px,96vh,74%)]" onClick={hideHint}>
             <DustText a={HELLO_JP} b={HELLO_EN} label="こんにちは — hello there" maxSize={200} />
           </div>
         </div>
 
         {/* intro line */}
-        <h1 className="hero-line mt-6 max-w-[21ch] font-display text-[clamp(2.3rem,5.4vw,5rem)] leading-[1.04] tracking-[-0.02em] md:mt-10">
+        <h1 className="hero-line mt-6 max-w-[21ch] md:mt-[min(2.5rem,3.5vh)] font-display text-[clamp(2rem,min(5.2vw,6.4vh),5rem)] leading-[1.04] tracking-[-0.02em]">
           <Words text="I'm Ishmeet" /> <CupCycler className="h-[0.92em] w-[0.92em]" start={3} />
           {/* no space, and a small pull-in: the comma hugs the cup's drawing, not its box */}
           <span className="-ml-[0.08em]">
@@ -158,7 +162,7 @@ export function Hero() {
         </h1>
 
         {/* footer row */}
-        <div className="hero-foot mt-auto flex flex-wrap items-end justify-between gap-4 pt-10">
+        <div className="hero-foot relative mt-auto flex flex-wrap items-end justify-between gap-4 pt-10">
           <a
             href={`mailto:${profile.email}`}
             className="group inline-flex items-center gap-3 rounded-full border-2 border-ink bg-sticker px-4 py-2 text-sm font-medium shadow-[3px_3px_0_var(--color-ink)] transition-shadow duration-200 hover:shadow-[6px_6px_0_var(--color-ink)]"
@@ -170,20 +174,17 @@ export function Hero() {
             </span>
             open to work — say hi
           </a>
-          <span className="scroll-cue flex items-center gap-2 font-hand text-2xl text-ink-soft">
+          <span className="scroll-cue absolute bottom-1 left-1/2 flex -translate-x-1/2 items-center gap-2 font-hand text-2xl text-ink-soft">
             scroll
             <svg viewBox="0 0 24 24" className="h-6 w-6 animate-bounce" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 4c-.6 5 .4 10 0 15M6.5 13.5c2 2 3.8 3.6 5.5 5.5 1.6-2 3.4-3.6 5.5-5.4" />
             </svg>
           </span>
-          <span className="hidden font-mono text-xs uppercase tracking-wider text-ink-soft md:block">
-            {profile.location} · est. 2019
-          </span>
         </div>
       </div>
 
       {/* draggable stickers */}
-      <DraggableSticker label="open to work badge" rotate={0} depth={0.6} className="right-[4%] top-[13%] hidden md:block">
+      <DraggableSticker label="open to work badge" rotate={0} depth={0.6} className="right-[4%] top-[24%] hidden md:block">
         <RotatingBadge text="open to work • design engineer • " size={128} color={colors.lilac} center={<SakuraDoodle tint={colors.sakura} className="h-10 w-10" />} />
       </DraggableSticker>
       <DraggableSticker label="onigiri sticker" shape={ONIGIRI_SHAPE} rotate={12} depth={0.9} className="left-[8%] bottom-[32%] md:left-auto md:bottom-auto md:right-[17%] md:top-[40%]">
@@ -192,29 +193,41 @@ export function Hero() {
       <DraggableSticker label="latte art sticker" rotate={-10} depth={0.35} className="right-[27%] bottom-[30%] hidden lg:block">
         <CupTopDown tint={colors.sky} className="h-28 w-28 text-ink" />
       </DraggableSticker>
-      <DraggableSticker label="keycap sticker" shape="rect" rotate={-14} depth={0.75} className="right-[6%] top-[4%] md:right-[16%] md:top-[12%]">
+      <DraggableSticker label="keycap sticker" shape="rect" rotate={-14} depth={0.75} className="right-[12%] bottom-[34%] md:bottom-auto md:right-[18%] md:top-[60%]">
         <KeycapDoodle tint={colors.tomato} className="h-16 w-16 text-ink md:h-20 md:w-20" />
       </DraggableSticker>
       <DraggableSticker label="hi it's me sticker" shape="rect" rotate={6} depth={0.5} className="left-[40%] bottom-[25%] md:left-auto md:bottom-auto md:right-[3%] md:top-[45%]" border={4}>
         <span className="block rounded-xl bg-lilac px-3 py-1 font-gochi text-2xl text-ink md:px-4 md:py-1.5 md:text-3xl">hi, it&apos;s me!</span>
       </DraggableSticker>
 
-      {/* pantry: drag onto Bean */}
-      <span aria-hidden className="pantry-label pointer-events-none absolute bottom-[21%] left-[8%] -rotate-3 font-hand text-xl text-espresso md:bottom-[13%] md:left-auto md:right-[30%] md:text-2xl">
-        feed Bean ↘
-      </span>
-      {PANTRY.map(({ kind, rotate, className, shape }) => {
-        const { Art, label } = INGREDIENTS[kind];
-        return (
-          <DraggableSticker key={kind} feeds={kind} shape={shape} label={label} rotate={rotate} depth={0.15} border={4} className={className}>
-            <Art className="h-11 w-11 text-ink md:h-12 md:w-12" />
-          </DraggableSticker>
-        );
-      })}
-
-      {/* mascot */}
-      <div className="absolute bottom-16 right-4 z-10 w-28 md:bottom-10 md:right-[5%] md:w-40">
-        <CupBuddy introDelay={1.4} />
+      {/* Bean + pantry: pinned to the bottom-right of the viewport, so you can feed it anywhere */}
+      <div className="pointer-events-none fixed bottom-4 right-4 z-50 flex items-end gap-4 md:bottom-6 md:right-[88px] md:gap-8">
+        <div className="pantry relative mb-3 flex items-end -space-x-3 md:-space-x-2">
+          <span aria-hidden className="pantry-label absolute -top-8 left-1 -rotate-3 whitespace-nowrap font-hand text-xl text-espresso md:text-2xl">
+            feed Bean ↘
+          </span>
+          {PANTRY.map(({ kind, rotate, y, className, shape }) => {
+            const { Art, label } = INGREDIENTS[kind];
+            return (
+              <div key={kind} className={className} style={{ transform: `translateY(${y}px)` }}>
+              <DraggableSticker
+                feeds={kind}
+                shape={shape}
+                label={label}
+                rotate={rotate}
+                depth={0}
+                border={4}
+                className="relative! pointer-events-auto"
+              >
+                <Art className="h-10 w-10 text-ink md:h-12 md:w-12" />
+              </DraggableSticker>
+              </div>
+            );
+          })}
+        </div>
+        <div className="pointer-events-auto w-24 md:w-36">
+          <CupBuddy introDelay={1.4} />
+        </div>
       </div>
     </section>
   );

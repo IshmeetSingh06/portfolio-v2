@@ -111,7 +111,7 @@ const CURSOR_ANIM = {
 function WorkProps() {
   return (
     <motion.svg
-      className="absolute -right-10 top-9 h-8 w-8"
+      className="absolute -right-5 top-10 h-7 w-7"
       viewBox="0 0 24 24"
       fill={colors.paper}
       stroke={INK}
@@ -230,7 +230,9 @@ function Oval({ drawn, tilt }: { drawn: boolean; tilt: number }) {
 
 const TILTS: Record<LinkId, number> = { about: -2, work: 3, connect: 2 };
 /** Extra height above some links, so bigger props (the work badge) clear the oval. */
-const LIFT: Partial<Record<LinkId, number>> = { work: 18 };
+const LIFT: Partial<Record<LinkId, number>> = { work: 0 };
+/** Doodle scale above each link (the work badge is big, so it shrinks there). */
+const SIZE: Partial<Record<LinkId, number>> = { work: 0.74 };
 
 // ---------- nav
 
@@ -306,7 +308,7 @@ export function Nav() {
     gsap.to(buddy, {
       x: s.x,
       y: s.y,
-      scale: id ? 1 : 0.7,
+      scale: id ? (SIZE[id] ?? 1) : 0.7,
       // lean into the direction of travel, then settle
       rotation: reduced ? 0 : gsap.utils.clamp(-18, 18, (s.x - fromX) / 12),
       duration: reduced ? 0 : 0.55,
@@ -375,7 +377,14 @@ export function Nav() {
     return () => window.removeEventListener("resize", park);
   }, []);
 
+  const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const leaveSoon = () => {
+    clearTimeout(leaveTimer.current);
+    leaveTimer.current = setTimeout(leaveAll, 140);
+  };
+
   const enter = (id: LinkId) => {
+    clearTimeout(leaveTimer.current);
     if (id === activeRef.current) return;
     activeRef.current = id;
     checkMissing();
@@ -414,9 +423,9 @@ export function Nav() {
   const Props = active ? PROPS[active] : null;
 
   return (
-    <header className="site-nav absolute inset-x-0 top-0 z-[58] px-5 md:px-10" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
-      <div ref={rootRef} className="relative mx-auto flex h-[210px] max-w-7xl items-end justify-center pb-5" onPointerLeave={leaveAll}>
-        <nav aria-label="Main" className="flex items-end gap-6 md:gap-14">
+    <header className="site-nav pointer-events-none absolute inset-x-0 top-0 z-[58] px-5 md:px-34 lg:px-42" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
+      <div ref={rootRef} className="relative mx-auto flex h-[190px] max-w-7xl items-end justify-center pb-5" onPointerLeave={() => leaveSoon()}>
+        <nav aria-label="Main" className="relative flex items-end gap-6 md:gap-14">
         <a
           ref={markRef}
           href="#top"
@@ -425,7 +434,7 @@ export function Nav() {
             getLenis()?.scrollTo(0, { duration: 1.2 });
           }}
           onPointerEnter={leaveAll}
-          className="-mb-1 block h-11 w-11"
+          className="pointer-events-auto absolute bottom-0 right-full -mb-1 mr-5 block h-11 w-11 md:mr-12"
           aria-label={`${profile.firstName}, back to top`}
         >
           {/* The doodle parks here as the logo (see the stage below); this box reserves the slot. */}
@@ -439,7 +448,7 @@ export function Nav() {
               onPointerEnter={(e) => e.pointerType === "mouse" && enter(id)}
               onFocus={() => enter(id)}
               onClick={(e) => onClick(e, id, href)}
-              className="relative px-1 font-gochi text-[21px] leading-none md:text-[26px]"
+              className="pointer-events-auto relative px-1 font-gochi text-[21px] leading-none md:text-[26px]"
               data-cursor="default"
             >
               <Oval drawn={active === id} tilt={TILTS[id]} />
@@ -470,7 +479,7 @@ export function Nav() {
           }}
           onPointerEnter={leaveAll}
           aria-pressed={sound}
-          className="absolute bottom-5 right-0 mb-0.5 hidden items-center gap-1.5 font-gochi text-lg text-ink-soft transition-colors hover:text-ink md:flex"
+          className="pointer-events-auto absolute bottom-5 right-0 mb-0.5 hidden items-center gap-1.5 font-gochi text-lg text-ink-soft transition-colors hover:text-ink md:flex"
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="M4 9.4h3.2L12 5.6v12.8l-4.8-3.8H4z" />
