@@ -61,7 +61,7 @@ function RoleCard({ role, id, index }: { role: Role; id: string; index: number }
               aria-expanded={open}
               aria-controls={`${id}-more`}
               onClick={() => setOpen((o) => !o)}
-              className="mt-4 font-hand text-2xl text-tomato underline decoration-wavy decoration-1 underline-offset-4"
+              className="mt-4 font-hand text-2xl text-tomato-deep underline decoration-wavy decoration-1 underline-offset-4"
             >
               {open ? "less ↑" : `+ ${rest.length} more`}
             </button>

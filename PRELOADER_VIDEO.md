@@ -1,6 +1,6 @@
 # Preloader video
 
-The preloader plays `public/preloader/loading.mp4` if it exists (else PNG frames, else the ink
+The preloader plays the video named in `public/preloader/frames.json` (`"video": "loading.mp4"`; it is `null` today) (else PNG frames, else the ink
 placeholder). Same idea as moneyincheck.org: one tiny silent looping clip, centred.
 
 ## Deliverable

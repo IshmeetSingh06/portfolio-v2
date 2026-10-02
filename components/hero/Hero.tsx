@@ -186,7 +186,7 @@ export function Hero() {
             </span>
             open to work — say hi
           </a>
-          <span className="scroll-cue absolute bottom-1 left-1/2 flex -translate-x-1/2 items-center gap-2 font-hand text-2xl text-ink-soft">
+          <span className="scroll-cue absolute bottom-1 left-1/2 hidden -translate-x-1/2 md:flex items-center gap-2 font-hand text-2xl text-ink-soft">
             scroll
             <svg viewBox="0 0 24 24" className="h-6 w-6 animate-bounce" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 4c-.6 5 .4 10 0 15M6.5 13.5c2 2 3.8 3.6 5.5 5.5 1.6-2 3.4-3.6 5.5-5.4" />
@@ -213,7 +213,7 @@ export function Hero() {
       </DraggableSticker>
 
       {/* Bean + pantry: pinned to the bottom-right of the viewport, so you can feed it anywhere */}
-      <div className="bean-dock pointer-events-none fixed bottom-4 right-4 z-50 flex items-end gap-4 md:bottom-6 md:right-[88px] md:gap-8">
+      <div className="bean-dock pointer-events-none fixed bottom-[4.75rem] right-4 z-50 flex items-end gap-4 md:bottom-6 md:right-[88px] md:gap-8">
         <div className="pantry relative mb-3 flex items-end -space-x-3 md:-space-x-2">
           <span aria-hidden className="pantry-label absolute -top-8 left-1 -rotate-3 whitespace-nowrap font-hand text-xl text-espresso md:text-2xl">
             feed Bean ↘

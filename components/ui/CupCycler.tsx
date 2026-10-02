@@ -49,6 +49,7 @@ export function CupCycler({ className, start = 0 }: Props) {
         data-cursor="pointer"
         onPointerEnter={next}
         onFocus={next}
+        role="img"
         aria-label={`coffee: ${name}`}
         className={`ink-boil inline-block align-[-0.1em] ${className ?? "h-[0.9em] w-[0.9em]"}`}
       >

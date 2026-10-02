@@ -1,3 +1,6 @@
+/** Public origin. Set NEXT_PUBLIC_SITE_URL at build time (see README); localhost is only the dev fallback. */
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+
 export const profile = {
   name: "Ishmeet Singh",
   firstName: "Ishmeet",

@@ -12,11 +12,11 @@ import { SipDoodle } from "@/components/preloader/SipDoodle";
  * sipping coffee on a short loop while handwritten notes pop in and out around him.
  * It plays until the page has loaded (and at least MIN_MS), then fades away.
  *
- * Art, in order of preference: /public/preloader/loading.mp4 (a silent loop, white background),
- * then PNG frames via frames.json (see PRELOADER_FRAMES.md), then the SVG SipDoodle (the default today).
+ * Art, in order of preference: a video named in /public/preloader/frames.json ("video": "loading.mp4",
+ * a silent loop on white), then PNG frames from the same manifest (see PRELOADER_FRAMES.md), then the
+ * SVG SipDoodle, which is what plays today.
  */
 
-const VIDEO_SRC = "/preloader/loading.mp4";
 const MIN_MS = 3000;
 const NOTE_EVERY_MS = 260;
 const NOTES = [
@@ -24,7 +24,7 @@ const NOTES = [
   "lgtm", "hmm…", "pour-over", "*thock*", "ctrl+z", "v2.0", "200ms", "espresso?", "wip ✦", "sip",
 ];
 
-type Manifest = { count: number; fps?: number; pattern?: string; pad?: number };
+type Manifest = { video?: string | null; count: number; fps?: number; pattern?: string; pad?: number };
 
 function frameSrcs(m: Manifest) {
   const pattern = m.pattern ?? "sip-{n}.png";
@@ -37,19 +37,8 @@ export function Preloader() {
   const notesRef = useRef<HTMLDivElement>(null);
   const fpsRef = useRef(12);
   const [srcs, setSrcs] = useState<string[] | null>(null);
-  const [hasVideo, setHasVideo] = useState(false);
+  const [video, setVideo] = useState<string | null>(null);
   const [frame, setFrame] = useState(0);
-
-  // A drawn video, if present (a missing public file 404s, so check the content type too).
-  useEffect(() => {
-    let cancelled = false;
-    fetch(VIDEO_SRC, { method: "HEAD" })
-      .then((r) => {
-        if (!cancelled && r.ok && r.headers.get("content-type")?.startsWith("video")) setHasVideo(true);
-      })
-      .catch(() => {});
-    return () => void (cancelled = true);
-  }, []);
 
   // Drawn frames, if present: preload all of them first so the loop never flickers.
   useEffect(() => {
@@ -57,7 +46,9 @@ export function Preloader() {
     fetch("/preloader/frames.json")
       .then((r) => (r.ok ? r.json() : null))
       .then((m: Manifest | null) => {
-        if (cancelled || !m?.count) return;
+        if (cancelled || !m) return;
+        if (m.video) return void setVideo(`/preloader/${m.video}`);
+        if (!m.count) return;
         const list = frameSrcs(m);
         Promise.all(list.map((src) => new Promise((res) => Object.assign(new Image(), { onload: res, onerror: res, src })))).then(() => {
           if (cancelled) return;
@@ -157,10 +148,10 @@ export function Preloader() {
     <div ref={rootRef} role="status" aria-label="Loading" className="preloader fixed inset-0 z-[90]" data-cursor="default">
       <div ref={notesRef} aria-hidden className="pointer-events-none absolute inset-0" />
       <div className="absolute left-1/2 top-1/2 h-[min(300px,42vh)] w-[min(240px,34vh)] -translate-x-1/2 -translate-y-1/2">
-        {hasVideo ? (
+        {video ? (
           // White background knocked out by multiply so it sits on the grid paper.
           <video
-            src={VIDEO_SRC}
+            src={video}
             autoPlay
             muted
             loop

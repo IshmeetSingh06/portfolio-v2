@@ -459,7 +459,7 @@ export function Nav() {
               <AnimatePresence>
                 {(active === id || nudge === id) && missing[id] && id !== "connect" && (
                   <motion.span
-                    className="absolute left-1/2 top-full mt-3 whitespace-nowrap font-gochi text-base text-tomato md:text-lg"
+                    className="absolute left-1/2 top-full mt-3 whitespace-nowrap font-gochi text-base text-tomato-deep md:text-lg"
                     style={{ x: "-50%" }}
                     initial={{ opacity: 0, y: -6, rotate: -8 }}
                     animate={{ opacity: 1, y: 0, rotate: -3, scale: nudge === id ? [1, 1.25, 1] : 1 }}
@@ -482,13 +482,14 @@ export function Nav() {
           }}
           onPointerEnter={leaveAll}
           aria-pressed={sound}
+          aria-label="Sound effects"
           className="pointer-events-auto absolute bottom-5 right-0 mb-0.5 hidden items-center gap-1.5 font-gochi text-lg text-ink-soft transition-colors hover:text-ink md:flex"
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="M4 9.4h3.2L12 5.6v12.8l-4.8-3.8H4z" />
             {sound ? <path d="M15.4 9.2c1.4 1.6 1.4 4 0 5.6M17.8 6.8c2.8 3 2.8 7.4 0 10.4" /> : <path d="M15.6 10l4 4M19.6 10l-4 4" />}
           </svg>
-          sound {sound ? "on" : "off"}
+          <span className="hidden lg:inline">sound {sound ? "on" : "off"}</span>
         </button>
 
         {/* ---------- stage: the active link's props (under) and the doodle (over) ---------- */}

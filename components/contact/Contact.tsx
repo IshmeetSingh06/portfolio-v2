@@ -104,7 +104,7 @@ export function Contact() {
 
       <footer className="mx-auto mt-28 flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 border-t-2 border-dashed border-ink/30 pt-5 font-hand text-xl text-ink-soft md:mt-36">
         <span suppressHydrationWarning>© {new Date().getFullYear()} {profile.name} · made with too much coffee ☕</span>
-        <a href="#top" data-cursor="pointer" className="text-tomato">
+        <a href="#top" data-cursor="pointer" className="text-tomato-deep">
           back to top ↑
         </a>
       </footer>

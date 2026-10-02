@@ -7,6 +7,8 @@
   --color-ink-soft: #5b534b;
   --color-sticker: #fffdf8;
   --color-tomato: #e8553d;
+  /* tomato for small text: #e8553d is 2.8:1 on paper, this is ~5.5:1 */
+  --color-tomato-deep: #b3301b;
   --color-matcha: #7fa66b;
   --color-espresso: #6b4430;
   --color-sky: #8ec5e8;

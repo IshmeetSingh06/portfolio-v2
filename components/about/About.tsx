@@ -47,9 +47,9 @@ function MeCard() {
           <path d="M14 63c1-8 8-12 18-12s17 4 18 12" fill={colors.sticker} />
         </svg>
       </div>
-      <figcaption className="mt-3 flex items-end justify-between gap-3">
+      <figcaption className="mt-3 flex flex-wrap items-end justify-between gap-x-3 gap-y-1">
         <span className="font-hand text-2xl leading-none">{profile.firstName}, roughly</span>
-        <span className="text-right font-hand text-lg leading-tight text-ink-soft">
+        <span className="whitespace-nowrap text-right font-hand text-lg leading-tight text-ink-soft">
           {profile.location.split(",")[0]}
           <br />
           <span className="tabular-nums">{time || " "}</span>
@@ -129,9 +129,9 @@ export function About() {
                 style={{ rotate: `${rotate}deg` }}
                 data-cursor="default"
               >
-                <div className="flex items-center gap-4">
-                  <Art tint={tint} className="ink-boil h-14 w-14 shrink-0 text-ink transition-transform duration-300 group-hover:-rotate-6" />
-                  <h3 className="font-hand text-3xl leading-none">{h.title}</h3>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 lg:gap-x-4">
+                  <Art tint={tint} className="ink-boil h-12 w-12 shrink-0 lg:h-14 lg:w-14 text-ink transition-transform duration-300 group-hover:-rotate-6" />
+                  <h3 className="font-hand text-[1.7rem] leading-none lg:text-3xl">{h.title}</h3>
                 </div>
                 <p className="mt-3 font-display text-lg leading-snug text-ink-soft">{h.note}</p>
               </li>
