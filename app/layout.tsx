@@ -7,6 +7,7 @@ import { Cursor } from "@/components/ui/Cursor";
 import { Nav } from "@/components/nav/Nav";
 import { EdgeStrips } from "@/components/edges/EdgeStrips";
 import { Preloader } from "@/components/preloader/Preloader";
+import { EasterEggs } from "@/components/eggs/EasterEggs";
 import { profile, siteUrl } from "@/content/profile";
 import "./globals.css";
 
@@ -100,6 +101,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <div className="md:px-24 lg:px-32">{children}</div>
         </SmoothScroll>
         <Cursor />
+        <EasterEggs />
       </body>
     </html>
   );

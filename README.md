@@ -24,6 +24,12 @@ pnpm build        # static site in ./out
 | Share image, icons | `app/opengraph-image.png`, `app/icon.svg`, `app/apple-icon.png` |
 | Scratch pages (`noindex`) | `app/lab/*` |
 
+## Easter eggs
+
+Five hidden things, one per stage of a coffee (bean, grind, brew, pour, sip), tracked in
+`lib/eggs.ts` and fired from `components/eggs/EasterEggs.tsx`. Progress is saved in `localStorage`
+and shown in the contact footer. Spoilers are in those two files.
+
 ## Deploy: GitHub Pages + a Cloudflare domain
 
 1. **Push** this repo to GitHub.

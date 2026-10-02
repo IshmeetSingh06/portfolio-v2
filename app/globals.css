@@ -368,6 +368,21 @@ body::after {
   border: 2.6px solid var(--color-ink);
 }
 
+/* ---------- Easter eggs ---------- */
+.egg-drop {
+  translate: 0 -90px;
+  animation: egg-fall var(--dur) var(--delay) cubic-bezier(0.3, 0.1, 0.6, 1) both;
+}
+@keyframes egg-fall {
+  to { translate: var(--dx) calc(100vh + 120px); rotate: var(--rot); }
+}
+.egg-toast {
+  animation: egg-toast-in 420ms var(--ease-pop) both;
+}
+@keyframes egg-toast-in {
+  from { opacity: 0; transform: translateY(16px) rotate(-2deg) scale(0.92); }
+}
+
 /* ---------- Preloader ---------- */
 .preloader {
   background-color: var(--color-paper);

@@ -8,6 +8,7 @@ import { colors } from "@/lib/tokens";
 import { profile } from "@/content/profile";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { SquiggleLink } from "@/components/ui/SquiggleLink";
+import { Journey } from "@/components/eggs/Journey";
 
 const LINKS = [
   { label: "GitHub", href: profile.socials.github, tint: colors.lilac, rotate: -3 },
@@ -104,6 +105,10 @@ export function Contact() {
 
       <footer className="mx-auto mt-28 flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 border-t-2 border-dashed border-ink/30 pt-5 font-hand text-xl text-ink-soft md:mt-36">
         <span suppressHydrationWarning>© {new Date().getFullYear()} {profile.name} · made with too much coffee ☕</span>
+        <span className="flex items-center gap-3 text-ink/50">
+          <span>psst, try typing what you came for</span>
+          <Journey />
+        </span>
         <a href="#top" data-cursor="pointer" className="text-tomato-deep">
           back to top ↑
         </a>

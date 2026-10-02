@@ -7,6 +7,7 @@ import { colors } from "@/lib/tokens";
 import { about, profile } from "@/content/profile";
 import { BookDoodle, CupDoodle, KeycapDoodle } from "@/components/art/doodles";
 import { ME } from "@/components/art/me";
+import { triggerEgg } from "@/lib/eggs";
 import { MeBeard, MeTurban } from "@/components/art/MeParts";
 
 const HOBBY_ART = {
@@ -30,8 +31,22 @@ function useLocalTime() {
 
 function MeCard() {
   const time = useLocalTime();
+  const clicks = useRef({ n: 0, t: 0 });
+  // Five quick clicks greet the polaroid back (a hidden thing, see lib/eggs.ts).
+  const poke = (e: React.MouseEvent<HTMLElement>) => {
+    const c = clicks.current;
+    const now = performance.now();
+    c.n = now - c.t < 700 ? c.n + 1 : 1;
+    c.t = now;
+    // transform rotation adds to the card's CSS tilt, so it eases back to 0, not 3
+    if (!prefersReducedMotion()) gsap.fromTo(e.currentTarget, { rotation: c.n % 2 ? -5 : 5 }, { rotation: 0, duration: 0.5, ease: "elastic.out(1.2, 0.3)" });
+    if (c.n >= 5) {
+      c.n = 0;
+      triggerEgg("akal");
+    }
+  };
   return (
-    <figure className="about-card relative mx-auto w-full max-w-[19rem] rotate-3 rounded-sm border-2 border-ink bg-sticker p-4 pb-5 shadow-[6px_6px_0_var(--color-ink)]">
+    <figure onClick={poke} data-cursor="pointer" className="about-card relative mx-auto w-full max-w-[19rem] rotate-3 rounded-sm border-2 border-ink bg-sticker p-4 pb-5 shadow-[6px_6px_0_var(--color-ink)]">
       {/* masking-tape strip */}
       <span aria-hidden className="absolute -top-3 left-1/2 h-6 w-24 -translate-x-1/2 -rotate-2 bg-butter/80 shadow-sm" />
       <div className="grid aspect-[4/5] place-items-center border-2 border-ink bg-lilac/50">
