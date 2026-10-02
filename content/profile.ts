@@ -1,7 +1,7 @@
 export const profile = {
   name: "Ishmeet Singh",
   firstName: "Ishmeet",
-  role: "Design engineer",
+  role: "iOS & design engineer",
   location: "New Delhi, India",
   timezone: "Asia/Kolkata",
   email: "singhishmeet16@gmail.com",
@@ -18,7 +18,7 @@ export const profile = {
 export const about = {
   heading: ["Part designer,", "part engineer,", "all in on the details."],
   paragraphs: [
-    "I'm Ishmeet, a design engineer in New Delhi. I live in the gap between a mockup and the real thing: the easing, the spacing, the little states nobody asked for.",
+    "I'm Ishmeet, an iOS and design engineer in New Delhi, building high-traffic apps used by millions. I live in the gap between a mockup and the real thing: the easing, the spacing, the little states nobody asked for.",
     "I like building interfaces that feel alive, and I'm happiest when I get to design and code the same screen.",
   ],
   fade: "Off the clock the details follow me around anyway.",

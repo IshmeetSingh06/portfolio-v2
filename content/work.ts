@@ -20,11 +20,21 @@ export const stats = [
   { value: "~32%", label: "off CI build times on Pyng", tint: "lilac", rotate: 2.5 },
 ] as const;
 
+/** Range beyond the role bullets (from the profile headline), grouped by platform. */
+export const range = [
+  { area: "iOS", items: ["Swift", "SwiftUI", "MVVM", "Performance tuning", "Modular architecture"] },
+  { area: "Cross-platform", items: ["React Native", "Expo"] },
+  { area: "Android", items: ["Kotlin", "Jetpack Compose"] },
+  { area: "Web", items: ["React", "Next.js", "TanStack"] },
+  { area: "Backend", items: ["NestJS", "Go", "Ruby on Rails", "Node.js"] },
+  { area: "Open source", items: ["GitLab", "OpenStreetMap"] },
+] as const;
+
 export const roles: Role[] = [
   {
     company: "Swiggy",
     title: "SDE-2",
-    when: "now",
+    when: "Apr 2025 – present",
     bullets: [
       "Promoted to lead frontend for Just, Swiggy's new value grocery app, owning technical strategy and architecture across iOS, Android and Web from 0→1.",
       "Improved page load (LCP) from 8s to 1.2s by migrating the Just web stack to TanStack, lifting the Lighthouse Performance score from 64 to 98.",
@@ -38,6 +48,7 @@ export const roles: Role[] = [
   {
     company: "Swiggy",
     title: "SDE-1",
+    when: "Jun 2024 – Mar 2025",
     bullets: [
       "Co-led a growth feature on Swiggy Assure end-to-end: ₹6.34 Cr in sales, 4,000+ orders and a 6% lift in new-user conversion.",
       "Shipped a same-day fix for an iOS 26 keyboard bug that blocked every Assure iOS login, coordinating an expedited App Store review.",
@@ -79,6 +90,7 @@ export const roles: Role[] = [
   {
     company: "GitLab",
     title: "Open source contributor",
+    when: "2024 – present",
     where: "remote",
     oss: true,
     bullets: [

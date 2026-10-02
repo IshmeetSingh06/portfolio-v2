@@ -83,7 +83,7 @@ export function Hero() {
       ScrollTrigger.create({
         trigger: root.current,
         start: "top top",
-        end: "bottom 55%",
+        end: "bottom 82%",
         onLeave: () => void gsap.to(dock, { autoAlpha: 0, y: 24, duration: 0.35, ease: "power2.in", overwrite: true }),
         onEnterBack: () => void gsap.to(dock, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out", overwrite: true }),
       });
@@ -165,7 +165,7 @@ export function Hero() {
           <Words text="I'm Ishmeet" /> <CupCycler className="h-[0.92em] w-[0.92em]" start={3} />
           {/* no space, and a small pull-in: the comma hugs the cup's drawing, not its box */}
           <span className="-ml-[0.08em]">
-            <Words text=", a design engineer" />
+            <Words text=", an iOS and design engineer" />
           </span>{" "}
           <InlineDoodle name="keycap" tint={colors.tomato} note="*thock*" className="h-[0.9em] w-[0.9em]" />{" "}
           <Words text="building interfaces that feel" /> <Words text="alive" className="italic" />{" "}
@@ -197,7 +197,7 @@ export function Hero() {
 
       {/* draggable stickers */}
       <DraggableSticker label="open to work badge" rotate={0} depth={0.6} className="right-[4%] top-[24%] hidden md:block">
-        <RotatingBadge text="open to work • design engineer • " size={128} color={colors.lilac} center={<SakuraDoodle tint={colors.sakura} className="h-10 w-10" />} />
+        <RotatingBadge text="open to work • iOS + design • " size={128} color={colors.lilac} center={<SakuraDoodle tint={colors.sakura} className="h-10 w-10" />} />
       </DraggableSticker>
       <DraggableSticker label="onigiri sticker" shape={ONIGIRI_SHAPE} rotate={12} depth={0.9} className="left-[8%] bottom-[32%] md:left-auto md:bottom-auto md:right-[17%] md:top-[40%]">
         <OnigiriDoodle tint={colors.sticker} className="h-20 w-20 text-ink md:h-24 md:w-24" />

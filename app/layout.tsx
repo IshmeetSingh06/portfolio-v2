@@ -45,8 +45,8 @@ const notoJp = Noto_Serif_JP({
 });
 
 export const metadata: Metadata = {
-  title: "Ishmeet Singh — design engineer",
-  description: "Design engineer in New Delhi. Coffee, clacky keyboards, and tiny delightful interfaces.",
+  title: "Ishmeet Singh — iOS & design engineer",
+  description: "iOS and design engineer in New Delhi, building high-traffic apps and tiny delightful interfaces.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/motion";
 import { colors } from "@/lib/tokens";
-import { HIGHLIGHTS, roles, stats, type Role } from "@/content/work";
+import { HIGHLIGHTS, range, roles, stats, type Role } from "@/content/work";
 
 const CHIP_TINTS = [colors.butter, colors.sky, colors.sakura, colors.lilac, colors.matcha, colors.tomato];
 
@@ -101,6 +101,7 @@ export function Work() {
       gsap.from(q(".work-title .word"), { yPercent: 118, rotation: 5, duration: 0.9, stagger: 0.06, ease: "power4.out", scrollTrigger: at(".work-title") });
       gsap.from(q(".stat"), { y: 36, opacity: 0, rotation: (i: number) => (i % 2 ? 6 : -6), duration: 0.65, stagger: 0.09, ease: "back.out(1.5)", scrollTrigger: at(".stats", "top 88%") });
       gsap.from(q(".timeline-line"), { scaleY: 0, transformOrigin: "top", ease: "none", scrollTrigger: { trigger: ".timeline", start: "top 70%", end: "bottom 70%", scrub: true } });
+      gsap.from(q(".range"), { y: 30, opacity: 0, duration: 0.7, ease: "power3.out", scrollTrigger: at(".range", "top 90%") });
       q(".role").forEach((el) => {
         gsap.from(el, { y: 40, opacity: 0, duration: 0.7, ease: "power3.out", scrollTrigger: at(el, "top 88%") });
       });
@@ -138,7 +139,29 @@ export function Work() {
           ))}
         </ul>
 
-        <div className="timeline relative mt-20 md:mt-28">
+        <div className="range mt-14 rounded-sm border-2 border-dashed border-ink/40 p-5 md:p-7">
+          <p className="font-hand text-2xl text-espresso">the range, beyond the job titles</p>
+          <dl className="mt-4 grid gap-x-8 gap-y-4 md:grid-cols-2">
+            {range.map((r) => (
+              <div key={r.area} className="flex flex-col gap-1.5">
+                <dt className="font-hand text-xl text-ink-soft">{r.area}</dt>
+                <dd className="flex flex-wrap gap-1.5">
+                  {r.items.map((it, i) => (
+                    <span
+                      key={it}
+                      className="rounded-full border-2 border-ink px-2.5 py-0.5 font-hand text-lg leading-snug"
+                      style={{ background: CHIP_TINTS[(i + r.area.length) % CHIP_TINTS.length] }}
+                    >
+                      {it}
+                    </span>
+                  ))}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <div className="timeline relative mt-14 md:mt-20">
           <span aria-hidden className="timeline-line absolute bottom-0 left-0 top-0 w-0.5 -translate-x-1/2 bg-ink/70" />
           <ol className="space-y-10 md:space-y-14">
             {roles.map((r) => (
