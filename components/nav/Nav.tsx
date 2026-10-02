@@ -425,7 +425,7 @@ export function Nav() {
 
   return (
     <header className="site-nav pointer-events-none absolute inset-x-0 top-0 z-[58] px-5 md:px-34 lg:px-42" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
-      <div ref={rootRef} className="relative mx-auto flex h-[190px] max-w-7xl items-end justify-center pb-5" onPointerLeave={() => leaveSoon()}>
+      <div ref={rootRef} className="relative mx-auto flex h-[146px] max-w-7xl items-end justify-center pb-5" onPointerLeave={() => leaveSoon()}>
         <nav aria-label="Main" className="relative flex items-end gap-6 md:gap-14">
         <a
           ref={markRef}
