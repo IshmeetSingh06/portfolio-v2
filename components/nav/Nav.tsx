@@ -9,6 +9,7 @@ import { colors, spring } from "@/lib/tokens";
 import { profile } from "@/content/profile";
 import { getLenis } from "@/components/providers/SmoothScroll";
 import { ME } from "@/components/art/me";
+import { MeBeard, MeTurban } from "@/components/art/MeParts";
 
 // Hobbies (coffee, books, keyboards) live inside "about".
 type LinkId = "about" | "work" | "connect";
@@ -51,10 +52,11 @@ function Buddy() {
         <path d="M-12 12l7 2M-8 1l4.4 5.6M1.4 -4l.8 6.6" strokeWidth={2.6} />
       </g>
       <g className="bd-full">
-        {/* spiky hair, face, ears (Jackie's head doodle) */}
-        <path d={ME.hair} />
-        <path d={ME.face} />
+        {/* face, ears, beard and dastar (Jackie's head doodle, in a turban) */}
         <path d={ME.ears} />
+        <path d={ME.face} />
+        <MeBeard />
+        <MeTurban />
       </g>
       <g className="bd-mark">
         <g className="bd-eyes">

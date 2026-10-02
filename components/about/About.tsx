@@ -7,6 +7,7 @@ import { colors } from "@/lib/tokens";
 import { about, profile } from "@/content/profile";
 import { BookDoodle, CupDoodle, KeycapDoodle } from "@/components/art/doodles";
 import { ME } from "@/components/art/me";
+import { MeBeard, MeTurban } from "@/components/art/MeParts";
 
 const HOBBY_ART = {
   coffee: { Art: CupDoodle, tint: colors.butter, rotate: -3 },
@@ -35,9 +36,10 @@ function MeCard() {
       <span aria-hidden className="absolute -top-3 left-1/2 h-6 w-24 -translate-x-1/2 -rotate-2 bg-butter/80 shadow-sm" />
       <div className="grid aspect-[4/5] place-items-center border-2 border-ink bg-lilac/50">
         <svg viewBox="0 0 64 64" className="ink-boil h-4/5 w-4/5" fill="none" stroke={colors.ink} strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="A doodle of Ishmeet">
-          <path d={ME.hair} />
-          <path d={ME.face} fill={colors.sticker} />
           <path d={ME.ears} />
+          <path d={ME.face} fill={colors.sticker} />
+          <MeBeard />
+          <MeTurban />
           {ME.eyes.map(([cx, cy]) => (
             <circle key={cx} cx={cx} cy={cy} r={1.6} fill={colors.ink} stroke="none" />
           ))}

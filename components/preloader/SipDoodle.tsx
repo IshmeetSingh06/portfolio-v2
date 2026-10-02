@@ -1,5 +1,6 @@
 import { colors } from "@/lib/tokens";
 import { ME } from "@/components/art/me";
+import { MeBeard, MeTurban } from "@/components/art/MeParts";
 
 /**
  * The preloader doodle: Ishmeet sipping coffee, drawn in SVG and stepped like a 16-frame hand-drawn
@@ -79,9 +80,10 @@ export function SipDoodle({ frame }: { frame: number }) {
         <path d="M44 85v12M56 85v12" strokeWidth={1.8} />
         <g transform={`rotate(${p.tilt} 50 92) translate(0 ${p.tilt ? -p.tilt * 0.4 : 0})`}>
           <g transform="translate(18 34)">
-            <path d={ME.hair} />
-            <path d={ME.face} fill={colors.paper} />
             <path d={ME.ears} />
+            <path d={ME.face} fill={colors.paper} />
+            <MeBeard />
+            <MeTurban />
             {p.eyes === "open" &&
               ME.eyes.map(([cx, cy]) => <circle key={cx} cx={cx} cy={cy} r={2} fill={colors.ink} stroke="none" />)}
             {p.eyes === "shut" && <path d={ME.eyesClosed} strokeWidth={2} />}
