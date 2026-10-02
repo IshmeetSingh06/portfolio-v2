@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/motion";
+import { whenIntroDone } from "@/lib/intro";
 import { play } from "@/lib/sound";
 import { colors, spring } from "@/lib/tokens";
 import { onBean, type Ingredient } from "@/components/mascot/beanBus";
@@ -145,6 +146,7 @@ export function CupBuddy({ className, introDelay = 0 }: Props) {
       const fx = one(".bb-fx");
       const hit = q(".bb-hit")[0] as HTMLElement;
       const reduced = prefersReducedMotion();
+      const cleanups: (() => void)[] = [];
 
       // ---------- setup
       const hiddenEyes = [...eyeSets.happy, ...eyeSets.squeeze, ...eyeSets.sleep, ...eyeSets.stars, ...eyeSets.hearts];
@@ -370,7 +372,9 @@ export function CupBuddy({ className, introDelay = 0 }: Props) {
       if (!reduced) {
         // ---------- intro: drop in, squash on landing, poof, wave
         gsap.set(root.current, { opacity: 0 });
-        gsap.delayedCall(introDelay, () => {
+        let alive = true;
+        cleanups.push(() => void (alive = false));
+        whenIntroDone().then(() => void (alive && gsap.delayedCall(introDelay, () => {
           gsap.to(root.current, { opacity: 1, duration: 0.15 });
           body3.y = -230;
           body3.vy = 0;
@@ -386,7 +390,7 @@ export function CupBuddy({ className, introDelay = 0 }: Props) {
               say("hi! i'm Bean ☕", 1800);
             });
           });
-        });
+        })));
       }
 
       // ---------- blink: quick close, hold, slower open
@@ -812,6 +816,7 @@ export function CupBuddy({ className, introDelay = 0 }: Props) {
       });
 
       return () => {
+        cleanups.forEach((f) => f());
         gsap.ticker.remove(tick);
         clearTimeout(blinkTimer);
         clearTimeout(fidgetTimer);

@@ -365,3 +365,24 @@ body::after {
   color: var(--color-tomato);
   border: 2.6px solid var(--color-tomato);
 }
+
+/* ---------- Preloader ---------- */
+.preloader {
+  background-color: var(--color-paper);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: var(--grid) var(--grid);
+  background-position: center top;
+  color: var(--color-ink);
+}
+.pl-note {
+  position: absolute;
+  translate: -50% -50%;
+  font-family: var(--font-hand);
+  font-size: 26px;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--color-ink);
+  visibility: hidden;
+}

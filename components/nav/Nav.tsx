@@ -8,6 +8,7 @@ import { play, setSoundEnabled, useSoundEnabled } from "@/lib/sound";
 import { colors, spring } from "@/lib/tokens";
 import { profile } from "@/content/profile";
 import { getLenis } from "@/components/providers/SmoothScroll";
+import { ME } from "@/components/art/me";
 
 // Hobbies (coffee, books, keyboards) live inside "about".
 type LinkId = "about" | "work" | "connect";
@@ -51,9 +52,9 @@ function Buddy() {
       </g>
       <g className="bd-full">
         {/* spiky hair, face, ears (Jackie's head doodle) */}
-        <path d="M18 29 18.6 19 23 23 25.6 14.6 29.6 20 33 12.4 36 19.4 40 13.6 42.4 20 46.6 17 46 29" />
-        <path d="M18 28.6c-1.2 13.2 5.8 23.6 14 23.6s15.2-10.4 14-23.6" />
-        <path d="M18.2 34c-4.6-1.4-5.8 6-.2 7.4M45.8 34c4.6-1.4 5.8 6 .2 7.4" />
+        <path d={ME.hair} />
+        <path d={ME.face} />
+        <path d={ME.ears} />
       </g>
       <g className="bd-mark">
         <g className="bd-eyes">

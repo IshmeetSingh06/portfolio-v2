@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/motion";
 import { play } from "@/lib/sound";
+import { whenIntroDone } from "@/lib/intro";
 import { colors } from "@/lib/tokens";
 
 type Word = {
@@ -164,11 +165,18 @@ export function DustText({ a, b, label, maxSize = 200, className }: Props) {
         py = Float32Array.from({ length: n }, () => H * (0.7 + Math.random() * 0.9));
         prevMode = -1;
         mode = 0;
-        switchAt = now() + 0.05;
         for (let i = 0; i < n; i++) {
           release[i] = (ax[i] / W) * 0.55 + Math.random() * 0.35;
           kicked[i] = 1;
         }
+        // Hold (and draw nothing) until the preloader lifts, then gather.
+        switchAt = Infinity;
+        whenIntroDone().then(() => {
+          if (disposed) return;
+          switchAt = now() + 0.05;
+          start();
+        });
+        return;
       } else {
         const tx = mode ? bx : ax, ty = mode ? by : ay;
         px = Float32Array.from(tx);

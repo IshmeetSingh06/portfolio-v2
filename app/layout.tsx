@@ -5,6 +5,7 @@ import { InkFilters } from "@/components/providers/InkFilters";
 import { Cursor } from "@/components/ui/Cursor";
 import { Nav } from "@/components/nav/Nav";
 import { EdgeStrips } from "@/components/edges/EdgeStrips";
+import { Preloader } from "@/components/preloader/Preloader";
 import "./globals.css";
 
 const instrument = Instrument_Serif({
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-dvh">
         <InkFilters />
         <SmoothScroll>
+          <Preloader />
           <EdgeStrips />
           <Nav />
           {/* desktop gutters keep content clear of the edge strips */}

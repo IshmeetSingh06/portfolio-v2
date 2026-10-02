@@ -3,6 +3,7 @@
 import { useRef, type ReactNode } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { inkIn } from "@/lib/ink";
+import { whenIntroDone } from "@/lib/intro";
 import { prefersReducedMotion } from "@/lib/motion";
 import { colors } from "@/lib/tokens";
 import { profile } from "@/content/profile";
@@ -81,7 +82,7 @@ export function Hero() {
       let alive = true;
       const intro = contextSafe!(() => {
         if (!alive) return;
-        const tl = gsap.timeline({ delay: 0.25 });
+        const tl = gsap.timeline({ delay: 0.05 });
         tl.from(q(".hero-line .word"), { yPercent: 118, rotation: 6, duration: 0.95, stagger: 0.035, ease: "power4.out" }, 0.35)
           .from(q(".hero-line .ink-boil"), { scale: 0, rotation: -45, duration: 0.7, stagger: 0.1, ease: "back.out(3)" }, 0.75)
           .from(
@@ -102,7 +103,7 @@ export function Hero() {
           .from(q(".pantry-label"), { opacity: 0, y: 6, duration: 0.5 }, 2.2)
           .from(q(".hero-foot > *"), { y: 16, opacity: 0, duration: 0.6, stagger: 0.08, ease: "power3.out" }, 1.8);
       });
-      document.fonts.ready.then(intro);
+      whenIntroDone().then(intro);
 
       // Scroll-away parallax: foreground things leave faster than the text.
       const st = { trigger: root.current, start: "top top", end: "bottom top", scrub: true };
@@ -226,7 +227,7 @@ export function Hero() {
           })}
         </div>
         <div className="pointer-events-auto w-24 md:w-36">
-          <CupBuddy introDelay={1.4} />
+          <CupBuddy introDelay={1.1} />
         </div>
       </div>
     </section>
