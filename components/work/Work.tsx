@@ -8,21 +8,17 @@ import { HIGHLIGHTS, range, roles, stats, type Role } from "@/content/work";
 
 const CHIP_TINTS = [colors.butter, colors.sky, colors.sakura, colors.lilac, colors.matcha, colors.tomato];
 
-function RoleCard({ role, id }: { role: Role; id: string }) {
+function RoleCard({ role, id, index }: { role: Role; id: string; index: number }) {
   const [open, setOpen] = useState(false);
   const shown = role.bullets.slice(0, HIGHLIGHTS);
   const rest = role.bullets.slice(HIGHLIGHTS);
 
   return (
-    <li className="role relative pl-8 md:pl-12">
-      {/* timeline dot */}
-      <span
-        aria-hidden
-        className="absolute left-0 top-7 h-4 w-4 -translate-x-1/2 rounded-full border-2 border-ink md:top-9"
-        style={{ background: role.oss ? colors.lilac : colors.butter }}
-      />
+    // From md up each card pins near the top and the next one slides over it; each pins a little lower
+    // than the last so the edges of the cards beneath stay visible, like a stack of index cards.
+    <li className="role md:sticky" style={{ top: `calc(5.5rem + ${index * 18}px)` }}>
       <article
-        className={`rounded-sm border-2 border-ink p-5 shadow-[4px_4px_0_var(--color-ink)] md:p-7 ${role.oss ? "bg-lilac/40" : "bg-sticker"}`}
+        className={`role-card origin-top rounded-sm border-2 border-ink p-5 shadow-[4px_4px_0_var(--color-ink)] md:p-7 ${role.oss ? "bg-[color-mix(in_srgb,var(--color-lilac)_40%,var(--color-sticker))]" : "bg-sticker"}`}
         data-cursor="default"
       >
         <header className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
@@ -100,17 +96,27 @@ export function Work() {
       gsap.from(q(".work-eyebrow"), { opacity: 0, x: -12, duration: 0.6, ease: "power3.out", scrollTrigger: at(".work-eyebrow", "top 90%") });
       gsap.from(q(".work-title .word"), { yPercent: 118, rotation: 5, duration: 0.9, stagger: 0.06, ease: "power4.out", scrollTrigger: at(".work-title") });
       gsap.from(q(".stat"), { y: 36, opacity: 0, rotation: (i: number) => (i % 2 ? 6 : -6), duration: 0.65, stagger: 0.09, ease: "back.out(1.5)", scrollTrigger: at(".stats", "top 88%") });
-      gsap.from(q(".timeline-line"), { scaleY: 0, transformOrigin: "top", ease: "none", scrollTrigger: { trigger: ".timeline", start: "top 70%", end: "bottom 70%", scrub: true } });
-      gsap.from(q(".range"), { y: 30, opacity: 0, duration: 0.7, ease: "power3.out", scrollTrigger: at(".range", "top 90%") });
-      q(".role").forEach((el) => {
-        gsap.from(el, { y: 40, opacity: 0, duration: 0.7, ease: "power3.out", scrollTrigger: at(el, "top 88%") });
+      // As the next card slides over, the one beneath settles back: a touch smaller and dimmer.
+      const cards = q(".role-card");
+      q(".role").forEach((next, i) => {
+        if (i === 0) return;
+        gsap.fromTo(
+          cards[i - 1],
+          { scale: 1, filter: "brightness(1)" },
+          {
+            scale: 0.95,
+            filter: "brightness(0.93)",
+            ease: "none",
+            scrollTrigger: { trigger: next, start: "top 90%", end: "top 25%", scrub: true },
+          },
+        );
       });
     },
     { scope: root },
   );
 
   return (
-    <section ref={root} id="work" className="relative overflow-hidden px-5 py-28 md:px-10 md:py-40">
+    <section ref={root} id="work" className="relative overflow-clip px-5 py-28 md:px-10 md:py-40">
       <div className="mx-auto w-full max-w-5xl">
         <p className="work-eyebrow mb-6 font-hand text-3xl text-espresso">
           02 <span className="mx-1">—</span> work
@@ -161,14 +167,11 @@ export function Work() {
           </dl>
         </div>
 
-        <div className="timeline relative mt-14 md:mt-20">
-          <span aria-hidden className="timeline-line absolute bottom-0 left-0 top-0 w-0.5 -translate-x-1/2 bg-ink/70" />
-          <ol className="space-y-10 md:space-y-14">
-            {roles.map((r) => (
-              <RoleCard key={`${r.company}-${r.title}`} role={r} id={`${r.company}-${r.title}`.replace(/\W+/g, "-").toLowerCase()} />
-            ))}
-          </ol>
-        </div>
+        <ol className="stack mt-14 space-y-10 md:mt-20 md:space-y-16">
+          {roles.map((r, i) => (
+            <RoleCard key={`${r.company}-${r.title}`} index={i} role={r} id={`${r.company}-${r.title}`.replace(/\W+/g, "-").toLowerCase()} />
+          ))}
+        </ol>
       </div>
     </section>
   );
