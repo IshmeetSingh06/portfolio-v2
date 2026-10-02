@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { inkIn } from "@/lib/ink";
 import { whenIntroDone } from "@/lib/intro";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -77,6 +77,17 @@ export function Hero() {
   useGSAP(
     (_ctx, contextSafe) => {
       const q = gsap.utils.selector(root);
+
+      // Bean and the pantry belong to the top page: they leave with the hero and return with it.
+      const dock = q(".bean-dock");
+      ScrollTrigger.create({
+        trigger: root.current,
+        start: "top top",
+        end: "bottom 55%",
+        onLeave: () => void gsap.to(dock, { autoAlpha: 0, y: 24, duration: 0.35, ease: "power2.in", overwrite: true }),
+        onEnterBack: () => void gsap.to(dock, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out", overwrite: true }),
+      });
+
       if (prefersReducedMotion()) return;
 
       let alive = true;
@@ -202,7 +213,7 @@ export function Hero() {
       </DraggableSticker>
 
       {/* Bean + pantry: pinned to the bottom-right of the viewport, so you can feed it anywhere */}
-      <div className="pointer-events-none fixed bottom-4 right-4 z-50 flex items-end gap-4 md:bottom-6 md:right-[88px] md:gap-8">
+      <div className="bean-dock pointer-events-none fixed bottom-4 right-4 z-50 flex items-end gap-4 md:bottom-6 md:right-[88px] md:gap-8">
         <div className="pantry relative mb-3 flex items-end -space-x-3 md:-space-x-2">
           <span aria-hidden className="pantry-label absolute -top-8 left-1 -rotate-3 whitespace-nowrap font-hand text-xl text-espresso md:text-2xl">
             feed Bean ↘

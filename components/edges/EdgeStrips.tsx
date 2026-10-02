@@ -49,7 +49,7 @@ function BeanMotif({ strokeW = 2.8, tint, ...props }: DoodleProps) {
 
 type Motif = { Art: ComponentType<DoodleProps>; solid: boolean };
 
-/** One repeat of the strip; solid tiles have the motif "cut out" in paper, outlined ones are printed in red. */
+/** One repeat of the strip; solid tiles have the motif "cut out" in paper, outlined ones are printed in black ink. */
 const SET: Motif[] = [
   { Art: CupDoodle, solid: true },
   { Art: SakuraDoodle, solid: false },
