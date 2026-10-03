@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { markIntroDone } from "@/lib/intro";
-import { prefersReducedMotion } from "@/lib/motion";
+import { prefersReducedMotion, useReducedMotion } from "@/lib/motion";
 import { getLenis } from "@/components/providers/SmoothScroll";
-import { LatteArt } from "@/components/preloader/LatteArt";
+import { LATTE_DONE, LatteArt } from "@/components/preloader/LatteArt";
 
 /**
  * Preloader (after moneyincheck.org): a latte being poured, centred on the grid paper, while
@@ -13,7 +13,7 @@ import { LatteArt } from "@/components/preloader/LatteArt";
  * MIN_MS), then fades away.
  */
 
-const MIN_MS = 3000;
+const MIN_MS = 3400; // one full pour (3 s) plus a beat on the finished latte
 const FPS = 12; // drawn "on twos"
 const NOTE_EVERY_MS = 260;
 const NOTES = [
@@ -25,6 +25,7 @@ export function Preloader() {
   const rootRef = useRef<HTMLDivElement>(null);
   const notesRef = useRef<HTMLDivElement>(null);
   const [frame, setFrame] = useState(0);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     const root = rootRef.current!;
@@ -61,7 +62,8 @@ export function Preloader() {
       const step = 1000 / FPS;
       if (acc >= step) {
         acc %= step;
-        setFrame((f) => f + 1);
+        // one pour, then hold on the finished latte until the page is ready
+        setFrame((f) => Math.min(f + 1, LATTE_DONE));
       }
     };
     if (!reduced) gsap.ticker.add(tick);
@@ -70,12 +72,14 @@ export function Preloader() {
     let noteTimer: ReturnType<typeof setInterval> | undefined;
     if (!reduced) {
       let n = Math.floor(Math.random() * NOTES.length);
+      let swing = Math.random() * Math.PI * 2;
       noteTimer = setInterval(() => {
         const el = document.createElement("span");
         el.textContent = NOTES[n++ % NOTES.length];
-        const angle = Math.random() * Math.PI * 2;
-        const rx = 150 + Math.random() * 90;
-        const ry = 120 + Math.random() * 70;
+        swing += 2.4 + Math.random() * 0.5; // roughly a golden-angle step, so notes never pile up
+        const angle = swing;
+        const rx = 190 + Math.random() * 90;
+        const ry = 150 + Math.random() * 70;
         const faint = Math.random() < 0.3;
         el.className = "pl-note";
         el.style.left = `calc(50% + ${(Math.cos(angle) * rx).toFixed(0)}px)`;
@@ -113,8 +117,8 @@ export function Preloader() {
   return (
     <div ref={rootRef} role="status" aria-label="Loading" className="preloader fixed inset-0 z-[90]" data-cursor="default">
       <div ref={notesRef} aria-hidden className="pointer-events-none absolute inset-0" />
-      <div className="absolute left-1/2 top-1/2 h-[min(300px,40vh)] w-[min(300px,40vh)] -translate-x-1/2 -translate-y-1/2">
-        <LatteArt frame={frame} />
+      <div className="absolute left-1/2 top-1/2 h-[min(380px,48vh)] w-[min(380px,48vh)] -translate-x-1/2 -translate-y-1/2">
+        <LatteArt frame={reducedMotion ? LATTE_DONE : frame} /> {/* no motion: just the finished latte */}
       </div>
     </div>
   );

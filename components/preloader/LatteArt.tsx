@@ -16,8 +16,8 @@ const CX = 46;
 const CY = 56;
 const CREMA = "#D9B48C";
 const ANGLE = -43; // the pitcher's spout points down and to the left, at the cup
-const PITCHER = 0.82; // pitcher scale
-const REACH = 21 * PITCHER; // pitcher centre → spout tip
+const PITCHER = 0.95; // pitcher scale
+const REACH = 26 * PITCHER; // pitcher centre → spout tip
 
 const POUR_START = 6;
 const POUR_END = 24;
@@ -26,13 +26,13 @@ const EXIT_START = 29;
 
 // Rosetta layers (leaf crescents), stacked down the cup: [y, half-width]
 const LAYERS: [number, number][] = [
-  [46, 7.5],
-  [49.4, 10.5],
-  [52.8, 13],
-  [56.2, 14],
-  [59.6, 12.5],
-  [63, 10],
-  [66.4, 6.5],
+  [41.5, 9],
+  [46.2, 12.5],
+  [50.9, 15],
+  [55.6, 16.2],
+  [60.3, 14.8],
+  [65, 12],
+  [69.4, 8],
 ];
 const layerFrame = (i: number) => POUR_START + 1 + Math.round((i * (POUR_END - POUR_START - 3)) / (LAYERS.length - 1));
 
@@ -40,7 +40,7 @@ const clamp = (n: number, a = 0, b = 1) => Math.min(b, Math.max(a, n));
 const ease = (t: number) => 1 - (1 - t) * (1 - t);
 const crescent = (y: number, w: number, s: number) => {
   const hw = w * s;
-  return `M${CX - hw} ${y}Q${CX} ${y - hw * 0.85} ${CX + hw} ${y}Q${CX} ${y + 2.4 * s} ${CX - hw} ${y}Z`;
+  return `M${CX - hw} ${y}Q${CX} ${y - hw * 0.7} ${CX + hw} ${y}Q${CX} ${y + 2.4 * s} ${CX - hw} ${y}Z`;
 };
 
 export function LatteArt({ frame }: { frame: number }) {
@@ -51,10 +51,10 @@ export function LatteArt({ frame }: { frame: number }) {
   const wig = pouring ? Math.sin((f - POUR_START) * 1.7) * 4 : 0; // the side-to-side wiggle
 
   // where the milk lands
-  const poolY = 46 + 20 * clamp((f - POUR_START) / (POUR_END - POUR_START));
+  const poolY = 43 + 26 * clamp((f - POUR_START) / (POUR_END - POUR_START));
   const pull = cutting ? (f - POUR_END) / (CUT_END - POUR_END) : f > CUT_END ? 1 : 0;
   const landX = pouring ? CX + wig * 0.5 : CX;
-  const landY = pouring ? poolY : 43 + 29 * pull;
+  const landY = pouring ? poolY : 40 + 33 * pull;
 
   // spout tip hovers up-right of where it lands; the stream is short and fat while pouring, thin when cutting
   const lift = cutting ? 1 : 0;
@@ -64,7 +64,7 @@ export function LatteArt({ frame }: { frame: number }) {
   const angle = ANGLE + wig * 1.3 + (cutting ? -6 : 0);
   const rad = (angle * Math.PI) / 180;
   const px = tipX + REACH * Math.cos(rad) + 46 * away;
-  const py = tipY + REACH * Math.sin(rad) * -1 - 34 * away;
+  const py = tipY + REACH * Math.sin(rad) - 34 * away; // sin(angle) < 0: the jug sits above-right of its spout
 
   const fade = f === 34 ? 0.5 : f === 35 ? 0 : 1; // the art melts so the loop restarts on a clean cup
   const stream = (w: number, c?: string) => (
@@ -103,7 +103,7 @@ export function LatteArt({ frame }: { frame: number }) {
           return <path key={i} d={crescent(y, w, t === 0 ? 0.4 : t === 1 ? 0.75 : 1)} fill={colors.sticker} strokeWidth={1.1} />;
         })}
         {pull > 0 && (
-          <path d="M46 43V72" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - pull} strokeWidth={1.6} stroke={colors.espresso} />
+          <path d="M46 39.5V73" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - pull} strokeWidth={1.6} stroke={colors.espresso} />
         )}
         {f >= 28 && f <= 33 && (
           <g strokeWidth={1.8}>
@@ -129,13 +129,13 @@ export function LatteArt({ frame }: { frame: number }) {
         </g>
       )}
 
-      {/* the pitcher: round body, pointed spout, handle on the far side (not drawn once it has left) */}
+      {/* the pitcher: a tilted milk jug seen from above, spout leading, handle on the far side */}
       {away < 0.99 && (
         <g transform={`translate(${px.toFixed(1)} ${py.toFixed(1)}) rotate(${angle.toFixed(1)}) scale(${PITCHER})`}>
-          <path d="M11 -3.4c9.4-1 10.6 9 0 9.4" strokeWidth={2.2} />
-          <path d="M-9.4 -9.4C-14 -8.4 -17 -4.6 -21 0c4 4.6 7 8.4 11.6 9.4A12.6 12.6 0 1 0 -9.4 -9.4z" fill={colors.paper} />
-          <ellipse cx={-1} cy={0} rx={7.6} ry={7} strokeWidth={1.4} strokeOpacity={0.4} />
-          <path d="M-5.4 -9.8c3.2 1.2 7 1.2 10 -.2" strokeWidth={1.4} strokeOpacity={0.5} />
+          <path d="M20 -4c11-1.6 13 12 0 10.4" strokeWidth={2.4} />
+          <path d="M-26 0C-18 -5 -12 -12.6 0 -13.2C12 -14 20 -7 20 0C20 7 12 14 0 13.2C-12 12.6 -18 5 -26 0z" fill={colors.paper} />
+          <path d="M-19 0C-12 -6.6 3 -8.6 13 -4C17 0 13 5 3 6.6C-8 7.8 -14 5 -19 0z" fill={colors.sticker} strokeWidth={1.4} />
+          <path d="M-9 -10.4C-4 -12 4 -12.4 10 -10" strokeWidth={1.4} strokeOpacity={0.45} />
         </g>
       )}
     </svg>
