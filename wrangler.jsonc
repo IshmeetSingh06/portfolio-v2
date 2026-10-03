@@ -1,0 +1,11 @@
+{
+  // Cloudflare Workers static assets: serve the Next.js static export (./out) as-is.
+  // The build runs `pnpm run build`; `npx wrangler deploy` then publishes this directory.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "portfolio-v2",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  }
+}
