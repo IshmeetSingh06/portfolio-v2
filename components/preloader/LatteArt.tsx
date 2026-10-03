@@ -24,8 +24,8 @@ const POUR_END = 24;
 const CUT_END = 28;
 const EXIT_START = 29;
 
-const HEART_Y = 55; // heart centre
-const HEART_S = 2.1; // full-size scale of the heart path
+const HEART_Y = 53; // heart centre (the point reaches r≈19 of the crema's 22 once pulled)
+const HEART_S = 2.0; // full-size scale of the heart path
 const INNER = "#B8855B"; // the thin rings drawn inside the milk
 
 /**
@@ -33,7 +33,7 @@ const INNER = "#B8855B"; // the thin rings drawn inside the milk
  * the spout drags the milk, which stretches the point and dips the notch, with no visible line.
  */
 const heart = (cx: number, cy: number, k: number, p = 0) => {
-  const tip = cy + (9 + 3.2 * p) * k;
+  const tip = cy + (9 + 2 * p) * k;
   const notch = cy + (-3 + 2 * p) * k;
   return `M${cx} ${tip}C${cx - 14 * k} ${cy + 1 * k} ${cx - 10 * k} ${cy - 9 * k} ${cx} ${notch}C${cx + 10 * k} ${cy - 9 * k} ${cx + 14 * k} ${cy + 1 * k} ${cx} ${tip}Z`;
 };
