@@ -1,51 +1,79 @@
 import { colors } from "@/lib/tokens";
 
 /**
- * A latte being poured, top-down: a milk pitcher slides in, a thin stream lands on the crema, a
- * rosetta stacks up layer by layer, and a line is pulled through it. Drawn as a pure function of
- * `frame`, stepped at 12 fps by the preloader (24 frames = a 2 s loop). `LATTE_DONE` is the finished
- * pour with the pitcher gone, used as a still for the About card, the favicon and the share image.
+ * A latte being poured, top-down, the way a barista does it: the pitcher slides in over the cup,
+ * milk lands on the crema, and as the pitcher wiggles side to side and backs off, the rosetta grows
+ * layer by layer. Then the spout lifts and the stream is drawn straight through the pattern.
+ * A pure function of `frame`, stepped at 12 fps by the preloader (36 frames = a 3 s loop).
+ * `LATTE_DONE` is the finished pour with the pitcher gone, used as a still (About card, icons).
  * Grid: 100 × 100, cup centred on (46, 56).
  */
 
-export const LATTE_FRAMES = 24;
-export const LATTE_DONE = 20;
+export const LATTE_FRAMES = 36;
+export const LATTE_DONE = 33;
 
 const CX = 46;
 const CY = 56;
 const CREMA = "#D9B48C";
-const LAYER_START = [4, 7, 10, 13];
-// Rosetta layers, biggest first; each stacked a little higher on the cup.
-const LAYERS = [
-  { y: 62, s: 1.05 },
-  { y: 57.5, s: 0.88 },
-  { y: 53.2, s: 0.7 },
-  { y: 49.2, s: 0.52 },
-];
+const ANGLE = -43; // the pitcher's spout points down and to the left, at the cup
+const PITCHER = 0.82; // pitcher scale
+const REACH = 21 * PITCHER; // pitcher centre → spout tip
 
-const heart = (cx: number, cy: number, s: number) =>
-  `M${cx} ${cy + 9 * s}C${cx - 14 * s} ${cy + 1 * s} ${cx - 10 * s} ${cy - 9 * s} ${cx} ${cy - 3 * s}C${cx + 10 * s} ${cy - 9 * s} ${cx + 14 * s} ${cy + 1 * s} ${cx} ${cy + 9 * s}Z`;
+const POUR_START = 6;
+const POUR_END = 24;
+const CUT_END = 28;
+const EXIT_START = 29;
+
+// Rosetta layers (leaf crescents), stacked down the cup: [y, half-width]
+const LAYERS: [number, number][] = [
+  [46, 7.5],
+  [49.4, 10.5],
+  [52.8, 13],
+  [56.2, 14],
+  [59.6, 12.5],
+  [63, 10],
+  [66.4, 6.5],
+];
+const layerFrame = (i: number) => POUR_START + 1 + Math.round((i * (POUR_END - POUR_START - 3)) / (LAYERS.length - 1));
 
 const clamp = (n: number, a = 0, b = 1) => Math.min(b, Math.max(a, n));
 const ease = (t: number) => 1 - (1 - t) * (1 - t);
+const crescent = (y: number, w: number, s: number) => {
+  const hw = w * s;
+  return `M${CX - hw} ${y}Q${CX} ${y - hw * 0.85} ${CX + hw} ${y}Q${CX} ${y + 2.4 * s} ${CX - hw} ${y}Z`;
+};
 
 export function LatteArt({ frame }: { frame: number }) {
   const f = ((frame % LATTE_FRAMES) + LATTE_FRAMES) % LATTE_FRAMES;
 
-  const away = clamp(1 - ease(clamp(f / 3))) + ease(clamp((f - 17) / 3)); // 0 = at the cup, 1 = gone
-  const pouring = f >= 4 && f <= 14;
-  const rock = pouring ? Math.sin(f * 1.5) * 3 : 0;
-  const pull = f < 15 ? 0 : f === 15 ? 0.5 : 1;
-  const fade = f === 22 ? 0.5 : f === 23 ? 0 : 1; // art melts away so the loop can restart clean
+  const pouring = f >= POUR_START && f <= POUR_END;
+  const cutting = f > POUR_END && f <= CUT_END;
+  const wig = pouring ? Math.sin((f - POUR_START) * 1.7) * 4 : 0; // the side-to-side wiggle
 
-  // Pitcher: centre, with the spout pointing at the cup. The stream runs spout tip → the pour point.
-  const px = 76 + 46 * away;
-  const py = 24 - 34 * away + (pouring ? Math.sin(f * 1.1) * 1.2 : 0);
-  const angle = -43 + rock - (f >= 15 && f <= 17 ? 8 : 0); // lifts away after the last layer
-  const tipX = px - 19 * Math.cos((angle * Math.PI) / 180);
-  const tipY = py - 19 * Math.sin((angle * Math.PI) / 180);
-  const wob = f % 2 ? 2 : -2;
-  const pourY = 49 + (f - 4) * 1.4;
+  // where the milk lands
+  const poolY = 46 + 20 * clamp((f - POUR_START) / (POUR_END - POUR_START));
+  const pull = cutting ? (f - POUR_END) / (CUT_END - POUR_END) : f > CUT_END ? 1 : 0;
+  const landX = pouring ? CX + wig * 0.5 : CX;
+  const landY = pouring ? poolY : 43 + 29 * pull;
+
+  // spout tip hovers up-right of where it lands; the stream is short and fat while pouring, thin when cutting
+  const lift = cutting ? 1 : 0;
+  const tipX = landX + 10 + wig * 0.5 + lift * 2;
+  const tipY = landY - 11 - lift * 3;
+  const away = clamp(1 - ease(clamp(f / 4))) + ease(clamp((f - EXIT_START) / 4)); // 0 = over the cup, 1 = gone
+  const angle = ANGLE + wig * 1.3 + (cutting ? -6 : 0);
+  const rad = (angle * Math.PI) / 180;
+  const px = tipX + REACH * Math.cos(rad) + 46 * away;
+  const py = tipY + REACH * Math.sin(rad) * -1 - 34 * away;
+
+  const fade = f === 34 ? 0.5 : f === 35 ? 0 : 1; // the art melts so the loop restarts on a clean cup
+  const stream = (w: number, c?: string) => (
+    <path
+      d={`M${tipX} ${tipY}Q${tipX - 2} ${(tipY + landY) / 2 + 1} ${landX} ${landY}`}
+      strokeWidth={w}
+      stroke={c}
+    />
+  );
 
   return (
     <svg
@@ -61,48 +89,23 @@ export function LatteArt({ frame }: { frame: number }) {
     >
       {/* saucer, cup, handle, coffee */}
       <circle cx={CX} cy={CY + 2} r={42} fill={colors.sticker} />
-      <circle
-        cx={CX}
-        cy={CY + 2}
-        r={34}
-        strokeWidth={1.4}
-        strokeOpacity={0.35}
-      />
-      <path
-        d={`M${CX + 29} ${CY - 6}h9c4.4 0 6.4 2.6 6.4 6.4s-2 6.4-6.4 6.4h-9`}
-        fill={colors.paper}
-      />
+      <circle cx={CX} cy={CY + 2} r={34} strokeWidth={1.4} strokeOpacity={0.35} />
+      <path d={`M${CX + 29} ${CY - 6}h9c4.4 0 6.4 2.6 6.4 6.4s-2 6.4-6.4 6.4h-9`} fill={colors.paper} />
       <circle cx={CX} cy={CY} r={31} fill={colors.paper} />
       <circle cx={CX} cy={CY} r={26.5} fill={colors.espresso} />
       <circle cx={CX} cy={CY} r={22} fill={CREMA} strokeWidth={1.4} />
 
-      {/* the rosetta, layer by layer */}
+      {/* the rosetta: each leaf grows in as the pour reaches it */}
       <g opacity={fade}>
-        {LAYERS.map((l, i) => {
-          const start = LAYER_START[i];
-          const grow =
-            f < start ? 0 : f === start ? 0.45 : f === start + 1 ? 0.8 : 1;
-          if (!grow) return null;
-          return (
-            <path
-              key={i}
-              d={heart(CX, l.y, l.s * grow)}
-              fill={colors.sticker}
-              strokeWidth={1.5}
-            />
-          );
+        {LAYERS.map(([y, w], i) => {
+          const t = f - layerFrame(i);
+          if (t < 0) return null;
+          return <path key={i} d={crescent(y, w, t === 0 ? 0.4 : t === 1 ? 0.75 : 1)} fill={colors.sticker} strokeWidth={1.1} />;
         })}
         {pull > 0 && (
-          <path
-            d="M46 40.5V70.5"
-            pathLength={1}
-            strokeDasharray={1}
-            strokeDashoffset={1 - pull}
-            strokeWidth={1.6}
-            stroke={colors.espresso}
-          />
+          <path d="M46 43V72" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - pull} strokeWidth={1.6} stroke={colors.espresso} />
         )}
-        {f >= 17 && f <= 21 && (
+        {f >= 28 && f <= 33 && (
           <g strokeWidth={1.8}>
             <path d="M16 30v6M13 33h6" />
             <path d="M80 66v5M77.5 68.5h5" />
@@ -111,43 +114,28 @@ export function LatteArt({ frame }: { frame: number }) {
         )}
       </g>
 
-      {/* the stream, and the splash where it lands */}
-      {pouring && (
+      {/* the stream: fat and wobbling while pouring, a thin thread while drawing the line */}
+      {pouring && f > POUR_START && (
         <g>
-          <path
-            d={`M${tipX} ${tipY}Q${(tipX + CX) / 2 + wob} ${(tipY + pourY) / 2 - 3} ${CX} ${pourY}`}
-            strokeWidth={5.4}
-          />
-          <path
-            d={`M${tipX} ${tipY}Q${(tipX + CX) / 2 + wob} ${(tipY + pourY) / 2 - 3} ${CX} ${pourY}`}
-            strokeWidth={2.8}
-            stroke={colors.sticker}
-          />
-          <ellipse
-            cx={CX}
-            cy={pourY}
-            rx={3 + (f % 3)}
-            ry={2 + (f % 2)}
-            fill={colors.sticker}
-            strokeWidth={1.4}
-          />
+          {stream(5.8)}
+          {stream(3.2, colors.sticker)}
+          <ellipse cx={landX} cy={landY} rx={3.4 + (f % 3)} ry={2.2 + (f % 2)} fill={colors.sticker} strokeWidth={1.4} />
+        </g>
+      )}
+      {cutting && (
+        <g>
+          {stream(3.4)}
+          {stream(1.4, colors.sticker)}
         </g>
       )}
 
-      {/* the pitcher (not drawn once it has left, so stills don't show it poking out) */}
+      {/* the pitcher: round body, pointed spout, handle on the far side (not drawn once it has left) */}
       {away < 0.99 && (
-        <g
-          transform={`translate(${px.toFixed(1)} ${py.toFixed(1)}) rotate(${angle.toFixed(1)})`}
-        >
-          <path d="M11 -3c9 0 9 8 0 8" strokeWidth={2.2} />
-          <path d="M-11 -5.4L-20 0L-11 5.4z" fill={colors.paper} />
-          <circle r={12} fill={colors.paper} />
-          <circle r={7.6} strokeWidth={1.4} strokeOpacity={0.4} />
-          <path
-            d="M-3.4 -9.4c2.4 1 5.6 1 8 0"
-            strokeWidth={1.4}
-            strokeOpacity={0.5}
-          />
+        <g transform={`translate(${px.toFixed(1)} ${py.toFixed(1)}) rotate(${angle.toFixed(1)}) scale(${PITCHER})`}>
+          <path d="M11 -3.4c9.4-1 10.6 9 0 9.4" strokeWidth={2.2} />
+          <path d="M-9.4 -9.4C-14 -8.4 -17 -4.6 -21 0c4 4.6 7 8.4 11.6 9.4A12.6 12.6 0 1 0 -9.4 -9.4z" fill={colors.paper} />
+          <ellipse cx={-1} cy={0} rx={7.6} ry={7} strokeWidth={1.4} strokeOpacity={0.4} />
+          <path d="M-5.4 -9.8c3.2 1.2 7 1.2 10 -.2" strokeWidth={1.4} strokeOpacity={0.5} />
         </g>
       )}
     </svg>
