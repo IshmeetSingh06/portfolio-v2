@@ -1,9 +1,9 @@
 import { colors } from "@/lib/tokens";
 
 /**
- * A latte being poured, top-down, the way a barista does it: the pitcher slides in over the cup,
- * milk lands on the crema, and as the pitcher wiggles side to side and backs off, the rosetta grows
- * layer by layer. Then the spout lifts and the stream is drawn straight through the pattern.
+ * A latte heart being poured, top-down, the way a barista does it: the pitcher slides in over the cup,
+ * milk lands on the crema and swells into a heart with rings inside it. Then the spout lifts and the
+ * stream is drawn straight through the heart, pulling its tip.
  * A pure function of `frame`, stepped at 12 fps by the preloader (36 frames = a 3 s loop).
  * `LATTE_DONE` is the finished pour with the pitcher gone, used as a still (About card, icons).
  * Grid: 100 × 100, cup centred on (46, 56).
@@ -24,25 +24,16 @@ const POUR_END = 24;
 const CUT_END = 28;
 const EXIT_START = 29;
 
-// Rosetta layers (leaf crescents), stacked down the cup: [y, half-width]
-const LAYERS: [number, number][] = [
-  [41.5, 9],
-  [46.2, 12.5],
-  [50.9, 15],
-  [55.6, 16.2],
-  [60.3, 14.8],
-  [65, 12],
-  [69.4, 8],
-];
-const layerFrame = (i: number) => POUR_START + 1 + Math.round((i * (POUR_END - POUR_START - 3)) / (LAYERS.length - 1));
+const HEART_Y = 55; // heart centre
+const HEART_S = 2.1; // full-size scale of the heart path
+const INNER = "#B8855B"; // the thin rings drawn inside the milk
+
+/** A heart centred on (cx, cy): two lobes on top, a point at the bottom. */
+const heart = (cx: number, cy: number, k: number) =>
+  `M${cx} ${cy + 9 * k}C${cx - 14 * k} ${cy + 1 * k} ${cx - 10 * k} ${cy - 9 * k} ${cx} ${cy - 3 * k}C${cx + 10 * k} ${cy - 9 * k} ${cx + 14 * k} ${cy + 1 * k} ${cx} ${cy + 9 * k}Z`;
 
 const clamp = (n: number, a = 0, b = 1) => Math.min(b, Math.max(a, n));
 const ease = (t: number) => 1 - (1 - t) * (1 - t);
-const crescent = (y: number, w: number, s: number) => {
-  const hw = w * s;
-  return `M${CX - hw} ${y}Q${CX} ${y - hw * 0.7} ${CX + hw} ${y}Q${CX} ${y + 2.4 * s} ${CX - hw} ${y}Z`;
-};
-
 export function LatteArt({ frame }: { frame: number }) {
   const f = ((frame % LATTE_FRAMES) + LATTE_FRAMES) % LATTE_FRAMES;
 
@@ -50,11 +41,12 @@ export function LatteArt({ frame }: { frame: number }) {
   const cutting = f > POUR_END && f <= CUT_END;
   const wig = pouring ? Math.sin((f - POUR_START) * 1.7) * 4 : 0; // the side-to-side wiggle
 
-  // where the milk lands
-  const poolY = 43 + 26 * clamp((f - POUR_START) / (POUR_END - POUR_START));
+  // the heart swells while the milk lands in its middle
+  const grow = ease(clamp((f - POUR_START) / (POUR_END - POUR_START)));
+  const size = HEART_S * (0.18 + 0.82 * grow);
   const pull = cutting ? (f - POUR_END) / (CUT_END - POUR_END) : f > CUT_END ? 1 : 0;
-  const landX = pouring ? CX + wig * 0.5 : CX;
-  const landY = pouring ? poolY : 40 + 33 * pull;
+  const landX = pouring ? CX + wig * 0.3 : CX;
+  const landY = pouring ? HEART_Y - 1 + Math.sin(f * 1.3) * 1.2 : 40 + 32 * pull; // then the spout drags down the middle
 
   // spout tip hovers up-right of where it lands; the stream is short and fat while pouring, thin when cutting
   const lift = cutting ? 1 : 0;
@@ -95,15 +87,17 @@ export function LatteArt({ frame }: { frame: number }) {
       <circle cx={CX} cy={CY} r={26.5} fill={colors.espresso} />
       <circle cx={CX} cy={CY} r={22} fill={CREMA} strokeWidth={1.4} />
 
-      {/* the rosetta: each leaf grows in as the pour reaches it */}
+      {/* the heart: milk, with thin rings inside as it fills, and the line pulled through it */}
       <g opacity={fade}>
-        {LAYERS.map(([y, w], i) => {
-          const t = f - layerFrame(i);
-          if (t < 0) return null;
-          return <path key={i} d={crescent(y, w, t === 0 ? 0.4 : t === 1 ? 0.75 : 1)} fill={colors.sticker} strokeWidth={1.1} />;
-        })}
+        {f >= POUR_START && (
+          <>
+            <path d={heart(CX, HEART_Y, size)} fill={colors.sticker} strokeWidth={1.4} />
+            {grow > 0.5 && <path d={heart(CX, HEART_Y + 0.5, size * 0.66)} stroke={INNER} strokeWidth={1.3} />}
+            {grow > 0.8 && <path d={heart(CX, HEART_Y + 1, size * 0.34)} stroke={INNER} strokeWidth={1.3} />}
+          </>
+        )}
         {pull > 0 && (
-          <path d="M46 39.5V73" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - pull} strokeWidth={1.6} stroke={colors.espresso} />
+          <path d="M46 40.5V72" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - pull} strokeWidth={1.6} stroke={colors.espresso} />
         )}
         {f >= 28 && f <= 33 && (
           <g strokeWidth={1.8}>
@@ -114,7 +108,7 @@ export function LatteArt({ frame }: { frame: number }) {
         )}
       </g>
 
-      {/* the stream: fat and wobbling while pouring, a thin thread while drawing the line */}
+      {/* the stream: fat while pouring, a thin thread while drawing the line */}
       {pouring && f > POUR_START && (
         <g>
           {stream(5.8)}
