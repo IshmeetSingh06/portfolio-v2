@@ -5,60 +5,26 @@ import { gsap } from "@/lib/gsap";
 import { markIntroDone } from "@/lib/intro";
 import { prefersReducedMotion } from "@/lib/motion";
 import { getLenis } from "@/components/providers/SmoothScroll";
-import { SipDoodle } from "@/components/preloader/SipDoodle";
+import { LatteArt } from "@/components/preloader/LatteArt";
 
 /**
- * Preloader (after moneyincheck.org): a small hand-drawn Ishmeet, centred on the grid paper,
- * sipping coffee on a short loop while handwritten notes pop in and out around him.
- * It plays until the page has loaded (and at least MIN_MS), then fades away.
- *
- * Art, in order of preference: a video named in /public/preloader/frames.json ("video": "loading.mp4",
- * a silent loop on white), then PNG frames from the same manifest (see PRELOADER_FRAMES.md), then the
- * SVG SipDoodle, which is what plays today.
+ * Preloader (after moneyincheck.org): a latte being poured, centred on the grid paper, while
+ * handwritten notes pop in and out around it. It plays until the page has loaded (and at least
+ * MIN_MS), then fades away.
  */
 
 const MIN_MS = 3000;
+const FPS = 12; // drawn "on twos"
 const NOTE_EVERY_MS = 260;
 const NOTES = [
   "07:02", "coffee #1", "git pull", "oat milk", "⌘S", "npm run dev", "60fps", "brb", "ship it",
-  "lgtm", "hmm…", "pour-over", "*thock*", "ctrl+z", "v2.0", "200ms", "espresso?", "wip ✦", "sip",
+  "lgtm", "hmm…", "pour-over", "*thock*", "ctrl+z", "v2.0", "200ms", "espresso?", "wip ✦", "pour",
 ];
-
-type Manifest = { video?: string | null; count: number; fps?: number; pattern?: string; pad?: number };
-
-function frameSrcs(m: Manifest) {
-  const pattern = m.pattern ?? "sip-{n}.png";
-  const pad = m.pad ?? 2;
-  return Array.from({ length: m.count }, (_, i) => `/preloader/${pattern.replace("{n}", String(i).padStart(pad, "0"))}`);
-}
 
 export function Preloader() {
   const rootRef = useRef<HTMLDivElement>(null);
   const notesRef = useRef<HTMLDivElement>(null);
-  const fpsRef = useRef(12);
-  const [srcs, setSrcs] = useState<string[] | null>(null);
-  const [video, setVideo] = useState<string | null>(null);
   const [frame, setFrame] = useState(0);
-
-  // Drawn frames, if present: preload all of them first so the loop never flickers.
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/preloader/frames.json")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((m: Manifest | null) => {
-        if (cancelled || !m) return;
-        if (m.video) return void setVideo(`/preloader/${m.video}`);
-        if (!m.count) return;
-        const list = frameSrcs(m);
-        Promise.all(list.map((src) => new Promise((res) => Object.assign(new Image(), { onload: res, onerror: res, src })))).then(() => {
-          if (cancelled) return;
-          fpsRef.current = m.fps ?? 12;
-          setSrcs(list);
-        });
-      })
-      .catch(() => {});
-    return () => void (cancelled = true);
-  }, []);
 
   useEffect(() => {
     const root = rootRef.current!;
@@ -85,14 +51,14 @@ export function Preloader() {
       });
     };
 
-    // Frame clock: steps at the sequence's fps (12 by default, i.e. drawn "on twos").
+    // Frame clock: steps at FPS, i.e. drawn "on twos".
     let acc = 0;
     let last = performance.now();
     const tick = () => {
       const now = performance.now();
       acc += now - last;
       last = now;
-      const step = 1000 / fpsRef.current;
+      const step = 1000 / FPS;
       if (acc >= step) {
         acc %= step;
         setFrame((f) => f + 1);
@@ -147,26 +113,8 @@ export function Preloader() {
   return (
     <div ref={rootRef} role="status" aria-label="Loading" className="preloader fixed inset-0 z-[90]" data-cursor="default">
       <div ref={notesRef} aria-hidden className="pointer-events-none absolute inset-0" />
-      <div className="absolute left-1/2 top-1/2 h-[min(300px,42vh)] w-[min(240px,34vh)] -translate-x-1/2 -translate-y-1/2">
-        {video ? (
-          // White background knocked out by multiply so it sits on the grid paper.
-          <video
-            src={video}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            aria-hidden
-            onLoadedData={(e) => prefersReducedMotion() && e.currentTarget.pause()}
-            className="h-full w-full object-contain mix-blend-multiply"
-          />
-        ) : srcs ? (
-          // eslint-disable-next-line @next/next/no-img-element -- a plain frame swap; next/image would re-layout every frame
-          <img src={srcs[frame % srcs.length]} alt="" className="h-full w-full object-contain" draggable={false} />
-        ) : (
-          <SipDoodle frame={frame} />
-        )}
+      <div className="absolute left-1/2 top-1/2 h-[min(300px,40vh)] w-[min(300px,40vh)] -translate-x-1/2 -translate-y-1/2">
+        <LatteArt frame={frame} />
       </div>
     </div>
   );

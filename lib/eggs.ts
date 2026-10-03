@@ -10,7 +10,7 @@ export const EGGS = [
   { id: "coffee", stage: "bean", clue: "type what you came for" },
   { id: "thock", stage: "grind", clue: "type the sound of a good keyboard" },
   { id: "konami", stage: "brew", clue: "an old cheat code from a gamepad" },
-  { id: "akal", stage: "pour", clue: "greet the polaroid. a few times." },
+  { id: "latte", stage: "pour", clue: "pour a fresh one: poke the latte" },
   { id: "undo", stage: "sip", clue: "the shortcut for regrets" },
 ] as const;
 

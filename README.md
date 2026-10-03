@@ -19,8 +19,7 @@ pnpm build        # static site in ./out
 | Name, links, about copy, hobbies, `siteUrl` | `content/profile.ts` |
 | Work history, stats, skills range | `content/work.ts` |
 | Page sections | `components/{hero,about,work,contact}` |
-| Head doodle (turban + beard), shared by nav, about card, preloader | `components/art/me.ts`, `MeParts.tsx` |
-| Preloader (SVG sip loop; can use a video or PNG frames) | `components/preloader`, `PRELOADER_VIDEO.md`, `PRELOADER_FRAMES.md` |
+| Preloader: a latte being poured (also the About card still and the icons) | `components/preloader/LatteArt.tsx` |
 | Share image, icons | `app/opengraph-image.png`, `app/icon.svg`, `app/apple-icon.png` |
 | Scratch pages (`noindex`) | `app/lab/*` |
 

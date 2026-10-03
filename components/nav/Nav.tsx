@@ -8,8 +8,6 @@ import { play, setSoundEnabled, useSoundEnabled } from "@/lib/sound";
 import { colors, spring } from "@/lib/tokens";
 import { profile } from "@/content/profile";
 import { getLenis } from "@/components/providers/SmoothScroll";
-import { ME } from "@/components/art/me";
-import { MeBeard, MeTurban } from "@/components/art/MeParts";
 
 // Hobbies (coffee, books, keyboards) live inside "about".
 type LinkId = "about" | "work" | "connect";
@@ -52,11 +50,11 @@ function Buddy() {
         <path d="M-12 12l7 2M-8 1l4.4 5.6M1.4 -4l.8 6.6" strokeWidth={2.6} />
       </g>
       <g className="bd-full">
-        {/* face, ears, beard and dastar (Jackie's head doodle, in a turban) */}
-        <path d={ME.ears} />
-        <path d={ME.face} />
-        <MeBeard />
-        <MeTurban />
+        {/* a little latte cup: handle, body, crema rim with a heart */}
+        <path d="M50.6 29.6c8.4-1.2 9.6 11.8-1.4 12.6" />
+        <path d="M13 24c0 12.4 1.8 22.2 6.2 26.6 3.6 3.6 22 3.6 25.6-.2 4.4-4.4 6.2-14 6.2-26.4" fill={colors.paper} />
+        <path d="M13 24c6-6.2 32-6.2 38 0-6 6.2-32 6.2-38 0z" fill={colors.paper} />
+        <path d="M32 27.6c-1.4-1.8-4.4-.4-3.2 1.6.8 1.2 2.4 2 3.2 2.8.8-.8 2.4-1.6 3.2-2.8 1.2-2-1.8-3.4-3.2-1.6z" fill={colors.paper} strokeWidth={1.4} />
       </g>
       <g className="bd-mark">
         <g className="bd-eyes">

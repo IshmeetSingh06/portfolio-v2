@@ -37,7 +37,7 @@ function makeDrops(arts: ComponentType<DoodleProps>[], count: number): Drop[] {
 
 /**
  * Hidden things, one per stage of a cup of coffee (see lib/eggs.ts). Type "coffee" or "thock",
- * enter the Konami code, press ⌘/Ctrl+Z, or click the polaroid a few times.
+ * enter the Konami code, press ⌘/Ctrl+Z, or poke the latte on the About card a few times.
  */
 export function EasterEggs() {
   const [drops, setDrops] = useState<Drop[]>([]);
@@ -77,10 +77,10 @@ export function EasterEggs() {
           rain(ALL_DOODLES, 40);
           say({ text: "+30 lives. nothing changed, still ship it ✦", egg: id });
           break;
-        case "akal":
+        case "latte":
           play("pop");
           rain([SparkleDoodle], 16);
-          say({ text: "sat sri akal! 🙏", egg: id });
+          say({ text: "fresh pour ☕ rosetta, no spills", egg: id });
           break;
         case "undo":
           play("gulp");

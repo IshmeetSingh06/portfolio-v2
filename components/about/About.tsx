@@ -6,9 +6,8 @@ import { prefersReducedMotion } from "@/lib/motion";
 import { colors } from "@/lib/tokens";
 import { about, profile } from "@/content/profile";
 import { BookDoodle, CupDoodle, KeycapDoodle } from "@/components/art/doodles";
-import { ME } from "@/components/art/me";
+import { LATTE_DONE, LatteArt } from "@/components/preloader/LatteArt";
 import { triggerEgg } from "@/lib/eggs";
-import { MeBeard, MeTurban } from "@/components/art/MeParts";
 
 const HOBBY_ART = {
   coffee: { Art: CupDoodle, tint: colors.butter, rotate: -3 },
@@ -32,7 +31,7 @@ function useLocalTime() {
 function MeCard() {
   const time = useLocalTime();
   const clicks = useRef({ n: 0, t: 0 });
-  // Five quick clicks greet the polaroid back (a hidden thing, see lib/eggs.ts).
+  // Five quick clicks pour a fresh one (a hidden thing, see lib/eggs.ts).
   const poke = (e: React.MouseEvent<HTMLElement>) => {
     const c = clicks.current;
     const now = performance.now();
@@ -42,28 +41,18 @@ function MeCard() {
     if (!prefersReducedMotion()) gsap.fromTo(e.currentTarget, { rotation: c.n % 2 ? -5 : 5 }, { rotation: 0, duration: 0.5, ease: "elastic.out(1.2, 0.3)" });
     if (c.n >= 5) {
       c.n = 0;
-      triggerEgg("akal");
+      triggerEgg("latte");
     }
   };
   return (
     <figure onClick={poke} data-cursor="pointer" className="about-card relative mx-auto w-full max-w-[19rem] rotate-3 rounded-sm border-2 border-ink bg-sticker p-4 pb-5 shadow-[6px_6px_0_var(--color-ink)]">
       {/* masking-tape strip */}
       <span aria-hidden className="absolute -top-3 left-1/2 h-6 w-24 -translate-x-1/2 -rotate-2 bg-butter/80 shadow-sm" />
-      <div className="grid aspect-[4/5] place-items-center border-2 border-ink bg-lilac/50">
-        <svg viewBox="0 0 64 64" className="ink-boil h-4/5 w-4/5" fill="none" stroke={colors.ink} strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="A doodle of Ishmeet">
-          <path d={ME.ears} />
-          <path d={ME.face} fill={colors.sticker} />
-          <MeBeard />
-          <MeTurban />
-          {ME.eyes.map(([cx, cy]) => (
-            <circle key={cx} cx={cx} cy={cy} r={1.6} fill={colors.ink} stroke="none" />
-          ))}
-          <path d={ME.smile} />
-          <path d="M14 63c1-8 8-12 18-12s17 4 18 12" fill={colors.sticker} />
-        </svg>
+      <div className="grid aspect-[4/5] place-items-center border-2 border-ink bg-lilac/50 p-5">
+        <LatteArt frame={LATTE_DONE} />
       </div>
       <figcaption className="mt-3 flex flex-wrap items-end justify-between gap-x-3 gap-y-1">
-        <span className="font-hand text-2xl leading-none">{profile.firstName}, roughly</span>
+        <span className="font-hand text-2xl leading-none">fresh pour</span>
         <span className="whitespace-nowrap text-right font-hand text-lg leading-tight text-ink-soft">
           {profile.location.split(",")[0]}
           <br />
