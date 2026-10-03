@@ -34,22 +34,23 @@ and shown in the contact footer. Spoilers are in those two files.
 
 1. **Push** this repo to GitHub.
 2. **Pages source:** repo → Settings → Pages → Build and deployment → Source: **GitHub Actions**.
-3. **Site URL:** repo → Settings → Secrets and variables → Actions → **Variables** → add
-   `SITE_URL` = `https://your-domain.com`. It feeds the canonical URL, Open Graph tags, sitemap and robots.
-4. **Custom domain:** Settings → Pages → Custom domain → enter your domain. (GitHub also writes a `CNAME`
-   file for it; for a root domain you can instead commit `public/CNAME` containing the bare domain.)
+3. **Site URL:** production builds already default to `https://heyish.dev` (`content/profile.ts`), so nothing to set.
+   To override it, for example for a preview, add an Actions variable `SITE_URL`.
+4. **Custom domain:** `public/CNAME` already contains `heyish.dev`. After the first deploy, confirm it under
+   Settings → Pages → Custom domain, then tick **Enforce HTTPS** once the certificate is issued (`.dev`
+   domains are HTTPS-only, so this matters).
 5. **Cloudflare DNS** (the domain's zone):
-   - Subdomain (`www`, `me`, …): `CNAME` → `<your-github-username>.github.io`.
-   - Apex domain: four `A` records → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`,
-     `185.199.111.153` (and optionally the four `AAAA` records from GitHub's docs).
+   - `heyish.dev` is an apex domain: four `A` records → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`,
+     `185.199.111.153` (and optionally the four `AAAA` records from GitHub's docs). Add a `www` `CNAME` →
+     `<your-github-username>.github.io` if you want `www.heyish.dev` to work too.
    - Start with the proxy **DNS only** (grey cloud) until GitHub issues its certificate and
      "Enforce HTTPS" can be ticked. Then you may turn the proxy on, with SSL/TLS mode **Full (strict)**.
 6. Every push to `main` runs `.github/workflows/deploy.yml` (lint, build, publish).
 
 Cloudflare Pages is an equally good host for the same output: connect the repo, build command
-`pnpm build`, output directory `out`, and set `NEXT_PUBLIC_SITE_URL`.
+`pnpm build`, output directory `out`.
 
 ## Notes
 
-- Without `NEXT_PUBLIC_SITE_URL` the canonical and Open Graph URLs fall back to `http://localhost:3000`.
+- Canonical and Open Graph URLs use `https://heyish.dev` in production builds and `http://localhost:3000` in dev.
 - This Next.js version has breaking changes from older docs; see `AGENTS.md` and `node_modules/next/dist/docs/`.

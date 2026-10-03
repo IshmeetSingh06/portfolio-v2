@@ -1,5 +1,7 @@
-/** Public origin. Set NEXT_PUBLIC_SITE_URL at build time (see README); localhost is only the dev fallback. */
-export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+/** Public origin. Production builds default to the real domain; NEXT_PUBLIC_SITE_URL overrides it (e.g. previews). */
+export const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === "production" ? "https://heyish.dev" : "http://localhost:3000")
+).replace(/\/$/, "");
 
 export const profile = {
   name: "Ishmeet Singh",
