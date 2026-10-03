@@ -29,27 +29,20 @@ Five hidden things, one per stage of a coffee (bean, grind, brew, pour, sip), tr
 `lib/eggs.ts` and fired from `components/eggs/EasterEggs.tsx`. Progress is saved in `localStorage`
 and shown in the contact footer. Spoilers are in those two files.
 
-## Deploy: GitHub Pages + a Cloudflare domain
+## Deploy: Cloudflare (Workers static assets)
 
-1. **Push** this repo to GitHub.
-2. **Pages source:** repo → Settings → Pages → Build and deployment → Source: **GitHub Actions**.
-3. **Site URL:** production builds already default to `https://heyish.dev` (`content/profile.ts`), so nothing to set.
-   To override it, for example for a preview, add an Actions variable `SITE_URL`.
-4. **Custom domain:** `public/CNAME` already contains `heyish.dev`. After the first deploy, confirm it under
-   Settings → Pages → Custom domain, then tick **Enforce HTTPS** once the certificate is issued (`.dev`
-   domains are HTTPS-only, so this matters).
-5. **Cloudflare DNS** (the domain's zone):
-   - `heyish.dev` is an apex domain: four `A` records → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`,
-     `185.199.111.153` (and optionally the four `AAAA` records from GitHub's docs). Add a `www` `CNAME` →
-     `<your-github-username>.github.io` if you want `www.heyish.dev` to work too.
-   - Start with the proxy **DNS only** (grey cloud) until GitHub issues its certificate and
-     "Enforce HTTPS" can be ticked. Then you may turn the proxy on, with SSL/TLS mode **Full (strict)**.
-6. Every push to `main` runs `.github/workflows/deploy.yml` (lint, build, publish).
+The site is a static export, built by Cloudflare from this repo and served from its CDN at
+`https://heyish.dev`. Every push to `main` rebuilds and redeploys it; other branches get preview URLs.
 
-Cloudflare Pages is an equally good host for the same output: connect the repo, build command
-`pnpm build`, output directory `out`.
+- **Build command:** `pnpm run build`  ·  **Deploy command:** `npx wrangler deploy`
+- **Serves:** `./out` (see `wrangler.jsonc`: `assets.directory`, with `404.html` for unknown paths)
+- **Build variable:** `NODE_VERSION=22` (add `PNPM_VERSION=11.9.0` if the pnpm version ever mismatches)
+- **Domain:** Workers & Pages → `portfolio-v2` → Settings → Domains & Routes → Custom domain.
+  Cloudflare creates the DNS record and certificate itself.
+- Canonical and Open Graph URLs default to `https://heyish.dev` in production builds; set
+  `NEXT_PUBLIC_SITE_URL` to override (for example on a preview).
 
 ## Notes
 
-- Canonical and Open Graph URLs use `https://heyish.dev` in production builds and `http://localhost:3000` in dev.
+- In dev, canonical and Open Graph URLs fall back to `http://localhost:3000`.
 - This Next.js version has breaking changes from older docs; see `AGENTS.md` and `node_modules/next/dist/docs/`.
