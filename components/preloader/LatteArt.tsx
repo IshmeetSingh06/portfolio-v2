@@ -28,9 +28,15 @@ const HEART_Y = 55; // heart centre
 const HEART_S = 2.1; // full-size scale of the heart path
 const INNER = "#B8855B"; // the thin rings drawn inside the milk
 
-/** A heart centred on (cx, cy): two lobes on top, a point at the bottom. */
-const heart = (cx: number, cy: number, k: number) =>
-  `M${cx} ${cy + 9 * k}C${cx - 14 * k} ${cy + 1 * k} ${cx - 10 * k} ${cy - 9 * k} ${cx} ${cy - 3 * k}C${cx + 10 * k} ${cy - 9 * k} ${cx + 14 * k} ${cy + 1 * k} ${cx} ${cy + 9 * k}Z`;
+/**
+ * A heart centred on (cx, cy): two lobes on top, a point at the bottom. `p` (0–1) is the pull-through:
+ * the spout drags the milk, which stretches the point and dips the notch, with no visible line.
+ */
+const heart = (cx: number, cy: number, k: number, p = 0) => {
+  const tip = cy + (9 + 3.2 * p) * k;
+  const notch = cy + (-3 + 2 * p) * k;
+  return `M${cx} ${tip}C${cx - 14 * k} ${cy + 1 * k} ${cx - 10 * k} ${cy - 9 * k} ${cx} ${notch}C${cx + 10 * k} ${cy - 9 * k} ${cx + 14 * k} ${cy + 1 * k} ${cx} ${tip}Z`;
+};
 
 const clamp = (n: number, a = 0, b = 1) => Math.min(b, Math.max(a, n));
 const ease = (t: number) => 1 - (1 - t) * (1 - t);
@@ -87,17 +93,14 @@ export function LatteArt({ frame }: { frame: number }) {
       <circle cx={CX} cy={CY} r={26.5} fill={colors.espresso} />
       <circle cx={CX} cy={CY} r={22} fill={CREMA} strokeWidth={1.4} />
 
-      {/* the heart: milk, with thin rings inside as it fills, and the line pulled through it */}
+      {/* the heart: milk, with thin rings inside as it fills; the pull-through stretches its point */}
       <g opacity={fade}>
         {f >= POUR_START && (
           <>
-            <path d={heart(CX, HEART_Y, size)} fill={colors.sticker} strokeWidth={1.4} />
+            <path d={heart(CX, HEART_Y, size, pull)} fill={colors.sticker} strokeWidth={1.4} />
             {grow > 0.5 && <path d={heart(CX, HEART_Y + 0.5, size * 0.66)} stroke={INNER} strokeWidth={1.3} />}
             {grow > 0.8 && <path d={heart(CX, HEART_Y + 1, size * 0.34)} stroke={INNER} strokeWidth={1.3} />}
           </>
-        )}
-        {pull > 0 && (
-          <path d="M46 40.5V72" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - pull} strokeWidth={1.6} stroke={colors.espresso} />
         )}
         {f >= 28 && f <= 33 && (
           <g strokeWidth={1.8}>
